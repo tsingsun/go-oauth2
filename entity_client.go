@@ -1,15 +1,15 @@
 package oauth2
 
 type ClientEntity struct {
-	name string
-	redirectUri string
+	Name string
+	RedirectUri string
 }
 
 func (a *ClientEntity) GetName() string  {
-	return a.name
+	return a.Name
 }
 
 
 func (a *ClientEntity) GetRedirectUri() string  {
-	return a.redirectUri
+	return a.RedirectUri
 }

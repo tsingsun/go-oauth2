@@ -81,7 +81,7 @@ func (g *Grant) issueAccessToken(ttl int64, client ClientEntityInterface, userId
 		accessToken.AddScope(v)
 	}
 	for ; g.maxGenerationAttempts > 0; g.maxGenerationAttempts-- {
-		accessToken.SetIdentifier(g.generateUniqueIdentifier(40))
+		accessToken.SetIdentifier(g.GenerateUniqueIdentifier(40))
 		if g.accessTokenRepository.PersistNewAccessToken(accessToken) {
 			return accessToken
 		}
@@ -89,7 +89,7 @@ func (g *Grant) issueAccessToken(ttl int64, client ClientEntityInterface, userId
 	return nil
 }
 
-func (g *Grant) generateUniqueIdentifier(n int) string {
+func (g *Grant) GenerateUniqueIdentifier(n int) string {
 	src := rand.NewSource(time.Now().UnixNano())
 	b := make([]byte, n)
 	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
