@@ -2,7 +2,7 @@ package oauth2
 
 import (
 	"errors"
-	oerror "github.com/tsingsun/go-oauth2/errors"
+	oauthError "github.com/tsingsun/go-oauth2/errors"
 	"strings"
 	"time"
 	"math/rand"
@@ -30,63 +30,76 @@ type Grant struct {
 	clientRepository      ClientRepositoryInterface
 	scopeRepository       ScopeRepositoryInterface
 	accessTokenRepository AccessTokenRepositoryInterface
-	maxGenerationAttempts int
+	MaxGenerationAttempts int
+	defaultScope          string
+	Crypt
 }
 
 // Validate Client Request
-func (g *Grant) validateClient(request TokenRequest) (ClientEntityInterface, error) {
-	if e := request.Validate(); e != nil {
-		return nil, e
-	}
-
-	if request.ClientId == "" && request.Username != "" {
-		request.ClientId = request.Username
-	}
-
-	if request.ClientSecret != "" && request.Password != "" {
-		request.ClientSecret = request.Password
-	}
-
-	if request.ClientId == "" {
-		return nil, errors.New("invalid request,miss client_id")
-	}
-
-	client := g.clientRepository.GetClientEntity(request.ClientId, g.GetIdentifier(), request.ClientSecret, true)
+func (g *Grant) validateClient(request *RequestWapper) (ClientEntityInterface, error) {
+	grantType := g.GrantTypeInterface.GetIdentifier()
+	client := g.clientRepository.GetClientEntity(request.ClientId, grantType, request.ClientSecret, true)
 
 	if client == nil {
-		return nil, oerror.NewInvalidClient()
+		return nil, oauthError.ErrInvalidClient
 	}
-
-	if request.RedirectUri != client.GetRedirectUri() {
-		return nil, errors.New("invalid request,incoret redirect uri")
+	if err := g.validateRedirectUri(request.RedirectUri, client); err != nil {
+		return nil, err
 	}
 	return client, nil
 }
 
-func (g *Grant) validateScopes(scopeString string, redirectUri string) (ret []ScopeEntityInterface, err error) {
+func (g *Grant) validateRedirectUri(requestUri string, client ClientEntityInterface) error {
+	if requestUri != "" {
+		isInArray := false
+		for _, v := range client.GetRedirectUri() {
+			if v == requestUri {
+				isInArray = true
+				break
+			}
+		}
+		if !isInArray {
+			return oauthError.ErrInvalidRedirectUri
+		}
+	}
+	return nil
+}
+
+func (g *Grant) validateScopes(scopeString string) (ret []ScopeEntityInterface, err error) {
 	scopes := strings.SplitN(scopeString, ",", 0)
 	for _, v := range scopes {
 		scope := g.scopeRepository.GetScopeEntityByIdentifier(v)
+		if scope == nil {
+			err = oauthError.ErrInvalidScope
+		}
 		ret = append(ret, scope)
 	}
 	return ret, nil
 }
 
-func (g *Grant) issueAccessToken(ttl int64, client ClientEntityInterface, userIdentifier string, scopes []ScopeEntityInterface) AccessTokenEntityInterface {
+func (g *Grant) issueAccessToken(ttl time.Duration, client ClientEntityInterface, userIdentifier string, scopes []ScopeEntityInterface) (AccessTokenEntityInterface, error) {
 	accessToken := g.accessTokenRepository.GetNewToken(client, scopes, userIdentifier)
 	accessToken.SetClient(client)
 	accessToken.SetUserIdentifier(userIdentifier)
-	accessToken.SetExpiryDateTime(time.Now().Add(time.Duration(ttl) * time.Second))
+	accessToken.SetExpiryDateTime(time.Now().Add(ttl))
 	for _, v := range scopes {
 		accessToken.AddScope(v)
 	}
-	for ; g.maxGenerationAttempts > 0; g.maxGenerationAttempts-- {
+	maxGenerationAttempts := g.getMaxGenerationAttempts()
+	for ; maxGenerationAttempts > 0; maxGenerationAttempts-- {
 		accessToken.SetIdentifier(g.GenerateUniqueIdentifier(40))
 		if g.accessTokenRepository.PersistNewAccessToken(accessToken) {
-			return accessToken
+			return accessToken, nil
 		}
 	}
-	return nil
+	return nil, errors.New("persist new access token error")
+}
+
+func (g *Grant) getMaxGenerationAttempts() int {
+	if g.MaxGenerationAttempts == 0 {
+		return 3
+	}
+	return g.MaxGenerationAttempts
 }
 
 func (g *Grant) GenerateUniqueIdentifier(n int) string {
@@ -106,4 +119,24 @@ func (g *Grant) GenerateUniqueIdentifier(n int) string {
 	}
 
 	return string(b)
+}
+
+func (g *Grant) SetAccessTokenRepository(accessTokenRepository AccessTokenRepositoryInterface) {
+	g.accessTokenRepository = accessTokenRepository
+}
+
+func (g *Grant) SetClientRepository(clientRepository ClientRepositoryInterface) {
+	g.clientRepository = clientRepository
+}
+
+func (g *Grant) SetScopeRepository(scopeRepository ScopeRepositoryInterface) {
+	g.scopeRepository = scopeRepository
+}
+
+func (g *Grant) SetEncryptionKey(key string) {
+	g.Crypt.SetEncryptionKey([]byte(key))
+}
+
+func (g *Grant) SetDefaultScope(scope string) {
+	g.defaultScope = scope
 }

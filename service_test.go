@@ -5,33 +5,6 @@ import (
 	"testing"
 )
 
-var (
-	defaultService *oauth2.Service
-)
-
-type Client struct {
-	oauth2.Entity
-	oauth2.ClientEntity
-}
-
-type ClientRepository struct {
-	oauth2.ClientRepositoryInterface
-	Db string
-}
-
-func (c *ClientRepository) GetClientEntity(clientIdentifier string, grantType oauth2.GrantType, clientSecret string, mustValidateSecret bool) oauth2.ClientEntityInterface {
-	cl := &Client{
-		Entity : oauth2.Entity{
-			Identifier:"user01",
-		},
-		ClientEntity:oauth2.ClientEntity{
-			Name:"name01",
-			RedirectUri:"http://localhost",
-		},
-	}
-	return cl
-}
-
 func TestNewService(t *testing.T) {
 	var ce = &ClientRepository{}
 	service := oauth2.NewService(oauth2.SetClientRepository(ce))
@@ -41,12 +14,13 @@ func TestNewService(t *testing.T) {
 }
 
 func TestService_HandleAccessTokenRequest(t *testing.T) {
-	tokenRequest := oauth2.TokenRequest{
+	tokenRequest := &oauth2.RequestWapper{
 		GrantType:oauth2.ClientCredentialGrantType,
 		ClientId:"0001",
 		ClientSecret:"abcdefasdf",
+		RedirectUri:"http://localhost",
 	}
-	ret,err := defaultService.HandleAccessTokenRequest(tokenRequest)
+	ret,err := defaultService.HandleAccessTokenRequestInternal(tokenRequest)
 	if err !=nil{
 		t.Fatalf("get token error: %s",err)
 	}
@@ -55,10 +29,3 @@ func TestService_HandleAccessTokenRequest(t *testing.T) {
 	}
 }
 
-func init() {
-
-	defaultService = oauth2.NewService(
-		oauth2.SetClientRepository(&ClientRepository{}),
-		oauth2.SetGrantTypes(&oauth2.ClientCredentialsGrant{}),
-	)
-}

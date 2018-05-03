@@ -3,9 +3,9 @@ package oauth2
 // Access token interface.
 type AccessTokenRepositoryInterface interface {
 	// Create a new access token
-	GetNewToken(ClientEntityInterface, []ScopeEntityInterface, string) AccessTokenEntityInterface
+	GetNewToken(ce ClientEntityInterface, scopes []ScopeEntityInterface,userIdentifier string) AccessTokenEntityInterface
 	// Persists a new access token to permanent storage.
-	PersistNewAccessToken(AccessTokenEntityInterface) bool
+	PersistNewAccessToken(accessTokenEntity AccessTokenEntityInterface) bool
 	// Revoke an access token.
 	RevokeAccessToken(tokenId string)
 	// Check if the access token has been revoked.
@@ -15,15 +15,13 @@ type AccessTokenRepositoryInterface interface {
 // Auth code storage interface.
 type AuthCodeRepositoryInterface interface {
 	// Creates a new AuthCode
-	GetNewAuthCode()
+	GetNewAuthCode() AuthCodeEntityInterface
 	// Persists a new auth code to permanent storage.
-	PersistNewAuthCode(authCodeEntity AuthCodeEntityInterface)
+	PersistNewAuthCode(authCodeEntity AuthCodeEntityInterface) bool
 	// Revoke an auth code.
 	RevokeAuthCode(code string)
 	// Check if the auth code has been revoked.
 	IsAuthCodeRevoked(code string) bool
-	// Check if the auth code is expired.
-	IsAuthCodeExpired(code string) bool
 }
 
 // Client storage interface.
@@ -35,9 +33,9 @@ type ClientRepositoryInterface interface {
 // Refresh token interface
 type RefreshTokenRepositoryInterface interface {
 	// Creates a new refresh token
-	GetNewRefreshToken()
+	GetNewRefreshToken() RefreshTokenEntityInterface
 	// Create a new refresh token_name.
-	PersistNewRefreshToken(refreshTokenEntity RefreshTokenEntityInterface)
+	PersistNewRefreshToken(refreshTokenEntity RefreshTokenEntityInterface) bool
 	// Revoke the refresh token.
 	RevokeRefreshToken(tokenId string)
 	// Check if the refresh token has been revoked.
@@ -50,10 +48,10 @@ type ScopeRepositoryInterface interface {
 	GetScopeEntityByIdentifier(identifier string) ScopeEntityInterface
 	// Given a client, grant type and optional user identifier validate the set of scopes requested
 	//   are valid and optionally append additional scopes or remove requested scopes.
-	FinalizeScopes(scopes []string, grantType string, clientEntity ClientEntityInterface, userIdentifier string)
+	FinalizeScopes(scopes []ScopeEntityInterface, grantType GrantType, clientEntity ClientEntityInterface, userIdentifier string) []ScopeEntityInterface
 }
 
 type UserRepositoryInterface interface {
 	// Get a user entity.
-	GetUserEntityByUserCredentials(username string, password string, grantType string, clientEntity ClientEntityInterface)
+	GetUserEntityByUserCredentials(username string, password string, grantType string, clientEntity ClientEntityInterface) UserEntityInterface
 }

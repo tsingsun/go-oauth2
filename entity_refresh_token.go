@@ -3,6 +3,7 @@ package oauth2
 import "time"
 
 type RefreshTokenEntity struct {
+	Entity
 	accessToken AccessTokenEntityInterface
 	expiryDateTime time.Time
 }

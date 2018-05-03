@@ -1,17 +1,11 @@
 package oauth2
 
-import (
-	"net/http"
-)
-
 // Grant type interface.
 type GrantTypeInterface interface {
-	// Set refresh token TTL.
-	SetRefreshTokenTTL(duration int)
 	// Return the grant identifier that can be used in matching up requests.
 	GetIdentifier() GrantType
 	// TODO Respond to an incoming request.
-	RespondToAccessTokenRequest(TokenRequest, ResponseTypeInterface) error
+	RespondToAccessTokenRequest(request *RequestWapper, responseType ResponseTypeInterface) error
 	/**
 	 * TODO AuthorizationRequest
 	 * If the grant can respond to an authorization request this method should be called to validate the parameters of
@@ -20,15 +14,18 @@ type GrantTypeInterface interface {
 	 * If the validation is successful an AuthorizationRequest object will be returned. This object can be safely
 	 * serialized in a user's session, and can be used during user authentication and authorization.
 	 */
-	ValidateAuthorizationRequest(r *http.Request) *http.Request
+	ValidateAuthorizationRequest(request *RequestWapper) (*AuthorizationRequest, error)
 	/**
 	* Once a user has authenticated and authorized the client the grant can complete the authorization request.
 	* The AuthorizationRequest object's $userId property must be set to the authenticated user and the
-	* $authorizationApproved property must reflect their desire to authorize or deny the client.
+	* authorizationApproved property must reflect their desire to authorize or deny the client.
 	*
 	 */
-	CompleteAuthorizationRequest(r *http.Request)
-	CanRespondToAccessTokenRequest(r *http.Request) bool
+	CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse,error)
+	// The grant type should return true if it is able to response to an token request
+	CanRespondToAccessTokenRequest(request *RequestWapper) error
+	// The grant type should return true if it is able to response to an authorization request
+	CanRespondToAuthorizationRequest(request *RequestWapper) error;
 	// Set the client repository.
 	SetClientRepository(clientRepository ClientRepositoryInterface)
 	// Set the access token repository.

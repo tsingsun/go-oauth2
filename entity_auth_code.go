@@ -1,6 +1,8 @@
 package oauth2
 
 type AuthCodeEntity struct {
+	Entity
+	TokenEntity
 	redirectUri string
 }
 

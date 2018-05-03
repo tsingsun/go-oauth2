@@ -6,11 +6,11 @@ type AuthorizationRequest struct {
 	// The client identifier
 	Client ClientEntityInterface
 	//TODO
-	User string
+	User UserEntityInterface
 	// An array of scope identifiers
 	Scopes []ScopeEntityInterface
 	// Has the user authorized the authorization request
-	AuthorizationApproved bool
+	IsAuthorizationApproved bool
 	// The redirect URI used in the request
 	RedirectUri string
 	// The state parameter on the authorization request
@@ -19,11 +19,4 @@ type AuthorizationRequest struct {
 	CodeChallenge string
 	// The code challenge method (if provided)
 	CodeChallengeMethod string
-}
-
-func NewAuthorizationRequest() *AuthorizationRequest {
-	return &AuthorizationRequest{
-		AuthorizationApproved: false,
-		Scopes:                make([]ScopeEntityInterface, 0),
-	}
 }

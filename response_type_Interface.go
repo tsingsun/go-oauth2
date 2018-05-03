@@ -1,12 +1,13 @@
 package oauth2
 
-import (
-	"net/http"
-)
+import "net/http"
 
 type ResponseTypeInterface interface {
+	// Set accessToken entity
 	SetAccessToken(accessToken AccessTokenEntityInterface)
 	SetRefreshToken(refreshToken RefreshTokenEntityInterface)
+	//
 	GenerateHttpResponse(response *http.Response)
-	SetEncryptionKey(key string)
+	GenerateResponse() *AccessTokenResponse
+	SetEncryptionKey(key []byte)
 }

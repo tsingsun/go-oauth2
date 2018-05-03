@@ -29,7 +29,7 @@ type TokenInterface interface {
 type AccessTokenEntityInterface interface {
 	TokenInterface
 	// Generate a JWT from the access token
-	ConvertToJWT()
+	ConvertToJWT(signKey []byte) string
 }
 
 type AuthCodeEntityInterface interface {
@@ -44,7 +44,7 @@ type ClientEntityInterface interface {
 	// Get the client's name.
 	GetName() string
 	// Returns the registered redirect URI (as a string).
-	GetRedirectUri() string
+	GetRedirectUri() []string
 }
 
 type RefreshTokenEntityInterface interface {
@@ -57,7 +57,7 @@ type RefreshTokenEntityInterface interface {
 	// Set the date time when the token expires.
 	SetExpiryDateTime(time time.Time)
 	// Set the access token that the refresh token was associated with.
-	SetAccessToken(accessToken *AccessTokenEntityInterface)
+	SetAccessToken(accessToken AccessTokenEntityInterface)
 	// Get the access token that the refresh token was originally associated with.
 	GetAccessToken() AccessTokenEntityInterface
 }
