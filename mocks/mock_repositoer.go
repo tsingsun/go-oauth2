@@ -2,7 +2,7 @@
 // Source: repository_interface.go
 
 // Package mock_oauth2 is a generated GoMock package.
-package oauth2_test_mocks
+package mock_oauth2
 
 import (
 	gomock "github.com/golang/mock/gomock"
@@ -68,8 +68,10 @@ func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) RevokeAccessToken(toke
 }
 
 // IsAccessTokenRevoked mocks base method
-func (m *MockAccessTokenRepositoryInterface) IsAccessTokenRevoked(tokenId string) {
-	m.ctrl.Call(m, "IsAccessTokenRevoked", tokenId)
+func (m *MockAccessTokenRepositoryInterface) IsAccessTokenRevoked(tokenId string) bool {
+	ret := m.ctrl.Call(m, "IsAccessTokenRevoked", tokenId)
+	ret0, _ := ret[0].(bool)
+	return ret0
 }
 
 // IsAccessTokenRevoked indicates an expected call of IsAccessTokenRevoked
@@ -239,8 +241,10 @@ func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) RevokeRefreshToken(to
 }
 
 // IsRefreshTokenRevoked mocks base method
-func (m *MockRefreshTokenRepositoryInterface) IsRefreshTokenRevoked(tokenId string) {
-	m.ctrl.Call(m, "IsRefreshTokenRevoked", tokenId)
+func (m *MockRefreshTokenRepositoryInterface) IsRefreshTokenRevoked(tokenId string) bool {
+	ret := m.ctrl.Call(m, "IsRefreshTokenRevoked", tokenId)
+	ret0, _ := ret[0].(bool)
+	return ret0
 }
 
 // IsRefreshTokenRevoked indicates an expected call of IsRefreshTokenRevoked

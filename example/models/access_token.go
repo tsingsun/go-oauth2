@@ -25,6 +25,6 @@ func (a *AccessToken) RevokeAccessToken(tokenId string) {
 
 }
 
-func (a *AccessToken) IsAccessTokenRevoked(tokenId string) {
-
+func (a *AccessToken) IsAccessTokenRevoked(tokenId string) bool {
+	return  true
 }

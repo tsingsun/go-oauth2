@@ -9,7 +9,7 @@ type AccessTokenRepositoryInterface interface {
 	// Revoke an access token.
 	RevokeAccessToken(tokenId string)
 	// Check if the access token has been revoked.
-	IsAccessTokenRevoked(tokenId string)
+	IsAccessTokenRevoked(tokenId string) bool
 }
 
 // Auth code storage interface.
@@ -39,7 +39,7 @@ type RefreshTokenRepositoryInterface interface {
 	// Revoke the refresh token.
 	RevokeRefreshToken(tokenId string)
 	// Check if the refresh token has been revoked.
-	IsRefreshTokenRevoked(tokenId string)
+	IsRefreshTokenRevoked(tokenId string) bool
 }
 
 // Scope interface
