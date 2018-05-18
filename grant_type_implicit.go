@@ -15,7 +15,6 @@ type ImplicitGrant struct {
 func NewImplicitGrant(options *Options) *ImplicitGrant {
 	grant := &ImplicitGrant{}
 	//child must explicit set grant type interface
-	grant.Grant.GrantTypeInterface = grant
 	grant.SetAccessTokenRepository(options.AccessTokenRepository)
 	grant.SetClientRepository(options.ClientRepository)
 	grant.SetScopeRepository(options.ScopeRepository)
@@ -59,13 +58,17 @@ func (c *ImplicitGrant) ValidateAuthorizationRequest(request *RequestWapper) (*A
 	if client == nil {
 		return nil,oauthErrors.ErrInvalidClient
 	}
-	if err := c.validateRedirectUri(request.RedirectUri, client); err != nil {
-		return nil, err
-	}
-	var rUri string = ""
-	if len(client.GetRedirectUri()) > 0 {
+	var rUri string = request.RedirectUri
+	if request.RedirectUri != "" {
+		if err := c.validateRedirectUri(request.RedirectUri, client); err != nil {
+			return nil, err
+		}
+	} else if len(client.GetRedirectUri()) != 1 {
+		return nil,oauthErrors.ErrInvalidClient
+	} else {
 		rUri = client.GetRedirectUri()[0]
 	}
+
 	scopes, err := c.validateScopes(request.Scope);
 	if err != nil {
 		return nil, err

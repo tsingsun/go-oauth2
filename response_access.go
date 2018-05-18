@@ -7,6 +7,5 @@ type AccessTokenResponse struct {
 	TokenType    string `json:"token_type"`
 	Scope        string `json:"scope,omitempty"`
 	RefreshToken string `json:"refresh_token,omitempty"`
+	Error        error  `json:"-"`
 }
-
-

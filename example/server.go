@@ -26,19 +26,24 @@ func main() {
 	implicitGrant.SetAccessTokenTTL(1 * time.Hour)
 	svr.RegisterGrantType(implicitGrant)
 
-	http.HandleFunc("/token", func(writer http.ResponseWriter, request *http.Request) {
-		svr.HandleTokenRequest(writer,request)
+	authCodeGrant := oauth2.NewAuthCodeGrant(svr.Options())
+	authCodeGrant.SetAuthCodeTTL(10 * time.Minute)
+	authCodeGrant.SetAccessTokenTTL(1 * time.Hour)
+	svr.RegisterGrantType(authCodeGrant)
+
+	http.HandleFunc("/oauth2/v1/token", func(writer http.ResponseWriter, request *http.Request) {
+		svr.HandleTokenRequest(writer, request)
 	})
-	http.HandleFunc("/authorize", func(writer http.ResponseWriter, request *http.Request) {
-		ar,err:=svr.ValidateAuthorizationRequest(writer,request)
-		if err!=nil{
+	http.HandleFunc("oauth2/v1/authorize", func(writer http.ResponseWriter, request *http.Request) {
+		ar, err := svr.ValidateAuthorizationRequest(writer, request)
+		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		ar.User = new(models.User)
 		ar.IsAuthorizationApproved = true
-		rts,err :=svr.CompleteAuthorizationRequest(ar)
-		if err!=nil{
+		rts, err := svr.CompleteAuthorizationRequest(ar)
+		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}

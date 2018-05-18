@@ -35,7 +35,7 @@ var (
 	SupportCodeChanllengeMethod = [2]string{"plain", "S256"}
 )
 
-func NewAuthCodeGrant(options Options) *AuthCodeGrant {
+func NewAuthCodeGrant(options *Options) *AuthCodeGrant {
 	grant := &AuthCodeGrant{
 		AuthCodeTTL:              10 * time.Minute, //default
 		AccessTokenTTL:           1 * time.Hour,
@@ -45,6 +45,9 @@ func NewAuthCodeGrant(options Options) *AuthCodeGrant {
 		enabledCodeExchangeProof: false,
 	}
 	grant.SetEncryptionKey(options.EncryptionKey)
+	grant.SetClientRepository(options.ClientRepository)
+	grant.SetScopeRepository(options.ScopeRepository)
+	grant.SetAccessTokenRepository(options.AccessTokenRepository)
 	return grant
 }
 
@@ -58,6 +61,23 @@ func (g *AuthCodeGrant) GetIdentifier() GrantType {
 
 func (g *AuthCodeGrant) SetAuthCodeTTL(duration time.Duration) {
 	g.AuthCodeTTL = duration
+}
+
+func (g *AuthCodeGrant) SetAccessTokenTTL(duration time.Duration) {
+	g.AccessTokenTTL = duration
+}
+
+func (g *AuthCodeGrant) CanRespondToAccessTokenRequest(request *RequestWapper) error {
+	if request.GrantType != g.GetIdentifier() {
+		return oauthErrors.ErrInvalidGrant
+	}
+	if request.ClientId == "" {
+		return oauthErrors.ErrInvalidRequest
+	}
+	if request.ClientSecret == "" {
+		return oauthErrors.ErrInvalidRequest
+	}
+	return nil
 }
 
 func (g *AuthCodeGrant) CanRespondToAuthorizationRequest(rw *RequestWapper) error {
@@ -153,13 +173,18 @@ func (g *AuthCodeGrant) ValidateAuthorizationRequest(rw *RequestWapper) (*Author
 	if client == nil {
 		return nil,oauthErrors.ErrInvalidClient
 	}
-	if err := g.validateRedirectUri(rw.RedirectUri, client); err != nil {
-		return nil,err
-	}
-	var rUri string = ""
-	if len(client.GetRedirectUri()) > 0 {
+
+	var rUri string = rw.RedirectUri
+	if rw.RedirectUri != "" {
+		if err := g.validateRedirectUri(rw.RedirectUri, client); err != nil {
+			return nil, err
+		}
+	} else if len(client.GetRedirectUri()) != 1 {
+		return nil,oauthErrors.ErrInvalidClient
+	} else {
 		rUri = client.GetRedirectUri()[0]
 	}
+
 	scopes, err := g.validateScopes(rw.Scope);
 	if err != nil {
 		return nil,err

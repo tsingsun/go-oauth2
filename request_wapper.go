@@ -34,6 +34,7 @@ func TokenRequestFromHttp(r *http.Request) *RequestWapper {
 	switch ret.GrantType {
 	case AuthCodeGrantType:
 		ret.Code = r.Form.Get("code")
+		ret.RedirectUri = r.Form.Get("redirect_uri")
 	case ClientCredentialGrantType:
 		ret.Code = r.Form.Get("code")
 	case PasswordGrantType:
@@ -41,8 +42,7 @@ func TokenRequestFromHttp(r *http.Request) *RequestWapper {
 		ret.Username = r.Form.Get("username")
 		ret.Password = r.Form.Get("password")
 	case RefreshTokenGrantType:
-		ret.RefreshToken = r.Form.Get("client_secret")
-		ret.Code = r.Form.Get("code")
+		ret.RefreshToken = r.Form.Get("refresh_token")
 	}
 	return ret
 

@@ -3,6 +3,7 @@ package oauth2
 import (
 	"net/http"
 	"time"
+	"encoding/json"
 )
 
 type BearerTokenResponse struct {
@@ -10,6 +11,7 @@ type BearerTokenResponse struct {
 	AccessToken  AccessTokenEntityInterface
 	RefreshToken RefreshTokenEntityInterface
 	EncryptionKey   []byte
+	Crypt
 }
 
 func (r *BearerTokenResponse) SetAccessToken(accessToken AccessTokenEntityInterface) {
@@ -26,6 +28,7 @@ func (r *BearerTokenResponse) GenerateHttpResponse(response *http.Response) {
 
 func (r *BearerTokenResponse) SetEncryptionKey(key []byte) {
 	r.EncryptionKey = key
+	r.Crypt.SetEncryptionKey(key)
 }
 
 func (r *BearerTokenResponse) GenerateResponse() *AccessTokenResponse {
@@ -37,7 +40,20 @@ func (r *BearerTokenResponse) GenerateResponse() *AccessTokenResponse {
 		TokenType:   "bearer",
 	}
 	if r.RefreshToken != nil {
-		ret.RefreshToken = r.RefreshToken.GetAccessToken().ConvertToJWT(r.EncryptionKey)
+		payload := &RefreshTokenPayload{
+			ClientId:       r.AccessToken.GetClient().GetIdentifier(),
+			RefreshTokenId: r.RefreshToken.GetIdentifier(),
+			AccessTokenId:  r.AccessToken.GetIdentifier(),
+			Scopes:         ConvertScopes2String(r.AccessToken.GetScopes()),
+			UserID:         r.AccessToken.GetUserIdentifier(),
+			ExpiresTime:    r.RefreshToken.GetExpiryDateTime(),
+		}
+		bData, _ := json.Marshal(payload)
+		tData, err := r.Encrypt(bData)
+		if err != nil {
+			ret.Error = err
+		}
+		ret.RefreshToken = tData
 	}
 	return ret
 }

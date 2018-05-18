@@ -52,3 +52,15 @@ func SetResponseType(r ResponseTypeInterface) Option {
 		options.DefaultResponseType = r
 	}
 }
+
+func SetAuthCodeRepository(ac AuthCodeRepositoryInterface) Option {
+	return func(options *Options) {
+		options.AuthCodeRepository = ac
+	}
+}
+
+func SetRefreshTokenRepository(rt RefreshTokenRepositoryInterface) Option {
+	return func(options *Options) {
+		options.RefreshTokenRepository = rt
+	}
+}

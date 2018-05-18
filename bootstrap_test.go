@@ -37,7 +37,6 @@ func (c *ClientRepository) GetClientEntity(clientIdentifier string, grantType oa
 
 type AccessToken struct {
 	oauth2.AccessTokenEntity
-
 }
 
 type AccessTokenRepository struct {
@@ -61,21 +60,20 @@ func (a *AccessTokenRepository) RevokeAccessToken(tokenId string) {
 
 }
 
-func (a *AccessTokenRepository) IsAccessTokenRevoked(tokenId string) {
-
+func (a *AccessTokenRepository) IsAccessTokenRevoked(tokenId string) bool {
+	return true
 }
 
 type Scope struct {
 	oauth2.Entity
 	oauth2.ScopeEntityInterface
-
 }
 
 type ScopeRepository struct {
 	oauth2.ScopeRepositoryInterface
 }
 
-func (s *Scope)getIdentifier() string {
+func (s *Scope) getIdentifier() string {
 	return s.Identifier
 }
 
@@ -88,6 +86,33 @@ func (s *ScopeRepository) GetScopeEntityByIdentifier(identifier string) oauth2.S
 
 func (s *ScopeRepository) FinalizeScopes(scopes []oauth2.ScopeEntityInterface, grantType oauth2.GrantType, clientEntity oauth2.ClientEntityInterface, userIdentifier string) []oauth2.ScopeEntityInterface {
 	return []oauth2.ScopeEntityInterface{&Scope{}}
+}
+
+type RefreshToken struct {
+	oauth2.RefreshTokenEntity
+}
+
+type RefreshTokenRepository struct {
+	oauth2.RefreshTokenRepositoryInterface
+}
+
+func (t *RefreshTokenRepository) GetNewRefreshToken() oauth2.RefreshTokenEntityInterface {
+	return &RefreshToken{}
+}
+
+// Create a new refresh token_name.
+func (t *RefreshTokenRepository) PersistNewRefreshToken(refreshTokenEntity oauth2.RefreshTokenEntityInterface) bool {
+	return true
+}
+
+// Revoke the refresh token.
+func (t *RefreshTokenRepository) RevokeRefreshToken(tokenId string) {
+
+}
+
+// Check if the refresh token has been revoked.
+func (t *RefreshTokenRepository) IsRefreshTokenRevoked(tokenId string) bool {
+	return true
 }
 
 type User struct {

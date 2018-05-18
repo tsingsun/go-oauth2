@@ -13,11 +13,10 @@ type ClientCredentialsGrant struct {
 func NewClientCredentialsGrant(options *Options) *ClientCredentialsGrant {
 	grant := &ClientCredentialsGrant{}
 	//child must explicit set grant type interface
-	grant.Grant.GrantTypeInterface = grant
 	grant.SetAccessTokenRepository(options.AccessTokenRepository)
 	grant.SetClientRepository(options.ClientRepository)
 	grant.SetScopeRepository(options.ScopeRepository)
-	grant.AccessTokenTTL = 7200 * time.Second
+	grant.AccessTokenTTL = 2 * time.Hour
 	grant.SetEncryptionKey(options.EncryptionKey)
 	return grant
 }

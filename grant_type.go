@@ -37,7 +37,7 @@ type Grant struct {
 
 // Validate Client Request
 func (g *Grant) validateClient(request *RequestWapper) (ClientEntityInterface, error) {
-	grantType := g.GrantTypeInterface.GetIdentifier()
+	grantType := request.GrantType
 	client := g.clientRepository.GetClientEntity(request.ClientId, grantType, request.ClientSecret, true)
 
 	if client == nil {

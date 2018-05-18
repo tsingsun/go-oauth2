@@ -22,6 +22,7 @@ var (
 	ErrInvalidCodeChallenge       = errors.New("invalid_code_challenge")
 	ErrInvalidCodeChallengeMethod = errors.New("invalid_code_challenge_method")
 	ErrPersistNewError            = errors.New("persist_new_error")
+	ErrInvalidRefreshToken        = errors.New("invalid_refresh_token")
 )
 
 // Descriptions error description
@@ -38,4 +39,5 @@ var Descriptions = map[error]string{
 	ErrUnsupportedGrantType:       "The authorization grant type is not supported by the authorization server",
 	ErrInvalidCodeChallenge:       "The code_challenge must be between 43 and 128 characters",
 	ErrInvalidCodeChallengeMethod: "Code challenge method must be `plain` or `S256`",
+	ErrInvalidRefreshToken:        "The refresh token is invalid.",
 }
