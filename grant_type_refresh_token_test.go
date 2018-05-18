@@ -23,9 +23,14 @@ func TestRefreshTokenGrant_RespondToAccessTokenRequest(t *testing.T) {
 
 	accessTokenRepositoryMock := mocks.NewMockAccessTokenRepositoryInterface(mockCtl)
 	accessTokenRepositoryMock.EXPECT().GetNewToken(gomock.Any(), gomock.Any(), gomock.Any()).Return(&AccessToken{})
+	accessTokenRepositoryMock.EXPECT().RevokeAccessToken(gomock.Any()).Return()
+	accessTokenRepositoryMock.EXPECT().PersistNewAccessToken(gomock.Any()).Return(true)
 
 	refreshTokenRepositoryMock := mocks.NewMockRefreshTokenRepositoryInterface(mockCtl)
 	refreshTokenRepositoryMock.EXPECT().GetNewRefreshToken().Return(&RefreshToken{})
+	refreshTokenRepositoryMock.EXPECT().IsRefreshTokenRevoked(gomock.Any()).Return(false)
+	refreshTokenRepositoryMock.EXPECT().RevokeRefreshToken(gomock.Any()).Return()
+	refreshTokenRepositoryMock.EXPECT().PersistNewRefreshToken(gomock.Any()).Return(true)
 	grant := oauth2.RefreshTokenGrant{
 		RefreshTokenRepository: refreshTokenRepositoryMock,
 	}
@@ -51,8 +56,7 @@ func TestRefreshTokenGrant_RespondToAccessTokenRequest(t *testing.T) {
 		Scope:"foo",
 	}
 	bearer := &oauth2.BearerTokenResponse{}
-	grant.RespondToAccessTokenRequest(sw,bearer)
-	var err error
+	err := grant.RespondToAccessTokenRequest(sw,bearer)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -97,7 +97,7 @@ func (t *RefreshTokenGrant) validateOldRefreshToken(rw *RequestWapper, clientId 
 		return nil,oauthErrors.ErrInvalidRequest
 	}
 	payload := &RefreshTokenPayload{}
-	if err :=json.Unmarshal(plData, payload); err != nil {
+	if err =json.Unmarshal(plData, payload); err != nil {
 		return nil,oauthErrors.ErrInvalidRequest
 	}
 
