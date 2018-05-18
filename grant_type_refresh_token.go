@@ -84,6 +84,7 @@ func (t *RefreshTokenGrant) RespondToAccessTokenRequest(rw *RequestWapper, res R
 	if err != nil {
 		return err
 	}
+	res.SetEncryptionKey(t.encryptionKey)
 	res.SetAccessToken(accessToken)
 	res.SetRefreshToken(refreshToken)
 
@@ -115,13 +116,13 @@ func (t *RefreshTokenGrant) validateOldRefreshToken(rw *RequestWapper, clientId 
 	return payload,nil
 }
 
-func (g *RefreshTokenGrant) issueRefreshToken(accessToken AccessTokenEntityInterface) (RefreshTokenEntityInterface, error) {
-	refreshToken := g.RefreshTokenRepository.GetNewRefreshToken()
-	refreshToken.SetExpiryDateTime(time.Now().Add(g.RefreshTokenTTL))
+func (t *RefreshTokenGrant) issueRefreshToken(accessToken AccessTokenEntityInterface) (RefreshTokenEntityInterface, error) {
+	refreshToken := t.RefreshTokenRepository.GetNewRefreshToken()
+	refreshToken.SetExpiryDateTime(time.Now().Add(t.RefreshTokenTTL))
 	refreshToken.SetAccessToken(accessToken)
-	for maxGenerationAttempts := g.getMaxGenerationAttempts(); maxGenerationAttempts > 0; maxGenerationAttempts-- {
-		refreshToken.SetIdentifier(g.GenerateUniqueIdentifier(40))
-		if g.RefreshTokenRepository.PersistNewRefreshToken(refreshToken) {
+	for maxGenerationAttempts := t.getMaxGenerationAttempts(); maxGenerationAttempts > 0; maxGenerationAttempts-- {
+		refreshToken.SetIdentifier(t.GenerateUniqueIdentifier(40))
+		if t.RefreshTokenRepository.PersistNewRefreshToken(refreshToken) {
 			return refreshToken, nil
 		}
 	}

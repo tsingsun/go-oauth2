@@ -162,6 +162,7 @@ func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res Respo
 	if err != nil {
 		return err
 	}
+	res.SetEncryptionKey(g.encryptionKey)
 	res.SetAccessToken(accessToken)
 	res.SetRefreshToken(refreshToken)
 	g.AuthCodeRepository.RevokeAuthCode(payload.AuthCodeId)
