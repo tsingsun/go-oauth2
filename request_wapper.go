@@ -44,6 +44,9 @@ func TokenRequestFromHttp(r *http.Request) *RequestWapper {
 	case RefreshTokenGrantType:
 		ret.RefreshToken = r.Form.Get("refresh_token")
 	}
+	if ret.ClientId == "" {
+		ret.ClientId, ret.ClientSecret, _ = r.BasicAuth()
+	}
 	return ret
 
 }

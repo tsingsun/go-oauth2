@@ -39,7 +39,7 @@ func NewAuthCodeGrant(options *Options) *AuthCodeGrant {
 	grant := &AuthCodeGrant{
 		AuthCodeTTL:              10 * time.Minute, //default
 		AccessTokenTTL:           1 * time.Hour,
-		RefreshTokenTTL:          1 * time.Minute,
+		RefreshTokenTTL:          24 * time.Hour,
 		AuthCodeRepository:       options.AuthCodeRepository,
 		RefreshTokenRepository:   options.RefreshTokenRepository,
 		enabledCodeExchangeProof: false,
@@ -65,6 +65,10 @@ func (g *AuthCodeGrant) SetAuthCodeTTL(duration time.Duration) {
 
 func (g *AuthCodeGrant) SetAccessTokenTTL(duration time.Duration) {
 	g.AccessTokenTTL = duration
+}
+
+func (g *AuthCodeGrant) SetRefreshTokenTTL(duration time.Duration) {
+	g.RefreshTokenTTL = duration
 }
 
 func (g *AuthCodeGrant) CanRespondToAccessTokenRequest(request *RequestWapper) error {
@@ -100,7 +104,7 @@ func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res Respo
 		return oauthErrors.ErrInvalidRequest
 	}
 	payload := &AuthCodePayload{}
-	if err :=json.Unmarshal(plData, payload); err != nil {
+	if err := json.Unmarshal(plData, payload); err != nil {
 		return oauthErrors.ErrInvalidRequest
 	}
 
@@ -172,7 +176,7 @@ func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res Respo
 func (g *AuthCodeGrant) ValidateAuthorizationRequest(rw *RequestWapper) (*AuthorizationRequest, error) {
 	client := g.clientRepository.GetClientEntity(rw.ClientId, g.GetIdentifier(), "", false)
 	if client == nil {
-		return nil,oauthErrors.ErrInvalidClient
+		return nil, oauthErrors.ErrInvalidClient
 	}
 
 	var rUri string = rw.RedirectUri
@@ -181,14 +185,14 @@ func (g *AuthCodeGrant) ValidateAuthorizationRequest(rw *RequestWapper) (*Author
 			return nil, err
 		}
 	} else if len(client.GetRedirectUri()) != 1 {
-		return nil,oauthErrors.ErrInvalidClient
+		return nil, oauthErrors.ErrInvalidClient
 	} else {
 		rUri = client.GetRedirectUri()[0]
 	}
 
 	scopes, err := g.validateScopes(rw.Scope);
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	ar := new(AuthorizationRequest)
@@ -201,21 +205,21 @@ func (g *AuthCodeGrant) ValidateAuthorizationRequest(rw *RequestWapper) (*Author
 	if g.enabledCodeExchangeProof {
 		if rw.CodeChallenge == "" {
 			err = oauthErrors.ErrInvalidRequest
-			return nil,err
+			return nil, err
 		}
 		if ok, _ := regexp.MatchString("^[A-Za-z0-9-._~]{43,128}$", rw.CodeChallenge); !ok {
 			err = oauthErrors.ErrInvalidCodeChallenge
-			return nil,err
+			return nil, err
 		}
 		if rw.CodeChallengeMethod != SupportCodeChanllengeMethod[0] && rw.CodeChallengeMethod != SupportCodeChanllengeMethod[1] {
 			err = oauthErrors.ErrInvalidCodeChallengeMethod
-			return nil,err
+			return nil, err
 		}
 		ar.CodeChallenge = rw.CodeChallenge
 		ar.CodeChallengeMethod = rw.CodeChallengeMethod
 	}
 
-	return ar,nil
+	return ar, nil
 }
 
 func (g *AuthCodeGrant) CompleteAuthorizationRequest(ar *AuthorizationRequest) (*RedirectTypeResponse, error) {
