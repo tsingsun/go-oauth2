@@ -17,6 +17,7 @@ func (a *AccessTokenEntity) ConvertToJWT(signKey []byte) string  {
 	claims.ExpiresAt = a.GetExpiryDateTime().Unix()
 	claims.IssuedAt = time.Now().Unix()
 	claims.Subject = ConvertScopes2String(a.GetScopes())
+	claims.Id = a.GetIdentifier()
 	token.Claims = claims
 
 	tokenString, _ := token.SignedString(signKey)
