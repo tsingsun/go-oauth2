@@ -8,9 +8,9 @@ import (
 
 type BearerTokenResponse struct {
 	ResponseTypeInterface
-	AccessToken  AccessTokenEntityInterface
-	RefreshToken RefreshTokenEntityInterface
-	EncryptionKey   []byte
+	AccessToken   AccessTokenEntityInterface
+	RefreshToken  RefreshTokenEntityInterface
+	EncryptionKey []byte
 	Crypt
 }
 
@@ -33,7 +33,7 @@ func (r *BearerTokenResponse) SetEncryptionKey(key []byte) {
 
 func (r *BearerTokenResponse) GenerateResponse() *AccessTokenResponse {
 	atoken := r.AccessToken.ConvertToJWT(r.EncryptionKey)
-	ttl := (int)(r.AccessToken.GetExpiryDateTime().Sub(time.Now()).Seconds())
+	ttl := int32(r.AccessToken.GetExpiryDateTime().Unix() - time.Now().Unix())
 	ret := &AccessTokenResponse{
 		AccessToken: atoken,
 		ExpiresIn:   ttl,
