@@ -9,7 +9,7 @@ import (
 
 type Option func(*Options)
 
-type GetUser func(*http.Request) (UserEntityInterface, error)
+type GetUser func(userId string) (UserEntityInterface, error)
 
 type Service struct {
 	opts       Options
@@ -61,7 +61,7 @@ func (s *Service) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	if s.GetUser != nil {
-		ar.User, err = s.GetUser(r)
+		ar.User, err = s.GetUser(ar.Client.GetUserIdentifier())
 	}
 	if err != nil {
 		errorResponse(err, w, r)
