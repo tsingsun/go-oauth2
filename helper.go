@@ -9,5 +9,5 @@ func ConvertScopes2String(scopes []ScopeEntityInterface) string {
 	for _, v := range scopes {
 		vals = append(vals, v.getIdentifier())
 	}
-	return strings.Join(vals,",")
+	return strings.Join(vals, ",")
 }

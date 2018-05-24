@@ -1,9 +1,9 @@
 package oauth2
 
 import (
-	"strings"
-	"net/url"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 type RedirectTypeResponse struct {

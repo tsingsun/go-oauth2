@@ -3,7 +3,7 @@ package oauth2
 // Access token interface.
 type AccessTokenRepositoryInterface interface {
 	// Create a new access token
-	GetNewToken(ce ClientEntityInterface, scopes []ScopeEntityInterface,userIdentifier string) AccessTokenEntityInterface
+	GetNewToken(ce ClientEntityInterface, scopes []ScopeEntityInterface, userIdentifier string) AccessTokenEntityInterface
 	// Persists a new access token to permanent storage.
 	PersistNewAccessToken(accessTokenEntity AccessTokenEntityInterface) bool
 	// Revoke an access token.

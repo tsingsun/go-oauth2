@@ -21,11 +21,11 @@ type GrantTypeInterface interface {
 	* authorizationApproved property must reflect their desire to authorize or deny the client.
 	*
 	 */
-	CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse,error)
+	CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse, error)
 	// The grant type should return true if it is able to response to an token request
 	CanRespondToAccessTokenRequest(request *RequestWapper) error
 	// The grant type should return true if it is able to response to an authorization request
-	CanRespondToAuthorizationRequest(request *RequestWapper) error;
+	CanRespondToAuthorizationRequest(request *RequestWapper) error
 	// Set the client repository.
 	SetClientRepository(clientRepository ClientRepositoryInterface)
 	// Set the access token repository.

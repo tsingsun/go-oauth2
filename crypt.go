@@ -1,9 +1,9 @@
 package oauth2
 
 import (
-	"encoding/base64"
 	"crypto/aes"
 	"crypto/cipher"
+	"encoding/base64"
 )
 
 type Crypt struct {

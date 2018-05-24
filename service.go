@@ -1,10 +1,10 @@
 package oauth2
 
 import (
-	"github.com/tsingsun/go-oauth2/errors"
-	"reflect"
-	"net/http"
 	"encoding/json"
+	"github.com/tsingsun/go-oauth2/errors"
+	"net/http"
+	"reflect"
 )
 
 type Option func(*Options)
@@ -42,7 +42,7 @@ func (s *Service) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
 	tq := TokenRequestFromHttp(r)
 	ret, err := s.HandleAccessTokenRequestInternal(tq)
 	if err != nil {
-		errorResponse(err,w,r)
+		errorResponse(err, w, r)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
@@ -56,7 +56,7 @@ func (s *Service) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
 func (s *Service) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request) {
 	ar, err := s.ValidateAuthorizationRequest(w, r)
 	if err != nil {
-		errorResponse(err,w,r)
+		errorResponse(err, w, r)
 		//http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -64,13 +64,13 @@ func (s *Service) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request)
 		ar.User, err = s.GetUser(r)
 	}
 	if err != nil {
-		errorResponse(err,w,r)
+		errorResponse(err, w, r)
 		return
 	}
 	ar.IsAuthorizationApproved = true
 	rts, err := s.CompleteAuthorizationRequest(ar)
 	if err != nil {
-		errorResponse(err,w,r)
+		errorResponse(err, w, r)
 		return
 	}
 	rts.GenerateHttpResponse(w)

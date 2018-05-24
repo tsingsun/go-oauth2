@@ -15,17 +15,16 @@ func TestNewService(t *testing.T) {
 
 func TestService_HandleAccessTokenRequest(t *testing.T) {
 	tokenRequest := &oauth2.RequestWapper{
-		GrantType:oauth2.ClientCredentialGrantType,
-		ClientId:"0001",
-		ClientSecret:"abcdefasdf",
-		RedirectUri:"http://localhost",
+		GrantType:    oauth2.ClientCredentialGrantType,
+		ClientId:     "0001",
+		ClientSecret: "abcdefasdf",
+		RedirectUri:  "http://localhost",
 	}
-	ret,err := defaultService.HandleAccessTokenRequestInternal(tokenRequest)
-	if err !=nil{
-		t.Fatalf("get token error: %s",err)
+	ret, err := defaultService.HandleAccessTokenRequestInternal(tokenRequest)
+	if err != nil {
+		t.Fatalf("get token error: %s", err)
 	}
 	if ret == nil {
 		t.Fatal("get token error")
 	}
 }
-

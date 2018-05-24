@@ -1,13 +1,13 @@
 package oauth2
 
 import (
-	oauthErrors "github.com/tsingsun/go-oauth2/errors"
-	"regexp"
-	"errors"
-	"time"
-	"encoding/json"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
+	"errors"
+	oauthErrors "github.com/tsingsun/go-oauth2/errors"
+	"regexp"
+	"time"
 )
 
 type AuthCodeGrant struct {
@@ -94,7 +94,7 @@ func (g *AuthCodeGrant) CanRespondToAuthorizationRequest(rw *RequestWapper) erro
 	return nil
 }
 
-func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res ResponseTypeInterface) (error) {
+func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res ResponseTypeInterface) error {
 	client, err := g.validateClient(rw)
 	if err != nil {
 		return err
@@ -190,7 +190,7 @@ func (g *AuthCodeGrant) ValidateAuthorizationRequest(rw *RequestWapper) (*Author
 		rUri = client.GetRedirectUri()[0]
 	}
 
-	scopes, err := g.validateScopes(rw.Scope);
+	scopes, err := g.validateScopes(rw.Scope)
 	if err != nil {
 		return nil, err
 	}

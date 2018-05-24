@@ -1,12 +1,12 @@
 package oauth2_test
 
 import (
-	"testing"
-	"github.com/golang/mock/gomock"
-	mocks "github.com/tsingsun/go-oauth2/mocks"
-	"github.com/tsingsun/go-oauth2"
-	"time"
 	"encoding/json"
+	"github.com/golang/mock/gomock"
+	"github.com/tsingsun/go-oauth2"
+	mocks "github.com/tsingsun/go-oauth2/mocks"
+	"testing"
+	"time"
 )
 
 func TestRefreshTokenGrant_RespondToAccessTokenRequest(t *testing.T) {
@@ -46,17 +46,17 @@ func TestRefreshTokenGrant_RespondToAccessTokenRequest(t *testing.T) {
 		UserID:         "123",
 		ExpiresTime:    time.Now().Add(10 * time.Minute),
 	}
-	d,_ := json.Marshal(payload)
-	oldRefreshToken,_ := grant.Encrypt(d)
+	d, _ := json.Marshal(payload)
+	oldRefreshToken, _ := grant.Encrypt(d)
 
 	var sw = &oauth2.RequestWapper{
-		ClientId:"foo",
-		ClientSecret:"bar",
-		RefreshToken:oldRefreshToken,
-		Scope:"foo",
+		ClientId:     "foo",
+		ClientSecret: "bar",
+		RefreshToken: oldRefreshToken,
+		Scope:        "foo",
 	}
 	bearer := &oauth2.BearerTokenResponse{}
-	err := grant.RespondToAccessTokenRequest(sw,bearer)
+	err := grant.RespondToAccessTokenRequest(sw, bearer)
 	if err != nil {
 		t.Fatal(err)
 	}

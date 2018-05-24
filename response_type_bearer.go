@@ -1,9 +1,9 @@
 package oauth2
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
-	"encoding/json"
 )
 
 type BearerTokenResponse struct {
@@ -32,7 +32,12 @@ func (r *BearerTokenResponse) SetEncryptionKey(key []byte) {
 }
 
 func (r *BearerTokenResponse) GenerateResponse() *AccessTokenResponse {
-	atoken := r.AccessToken.ConvertToJWT(r.EncryptionKey)
+	atoken, err := r.AccessToken.ConvertToJWT(r.EncryptionKey)
+	if err != nil {
+		return &AccessTokenResponse{
+			Error: err,
+		}
+	}
 	ttl := int32(r.AccessToken.GetExpiryDateTime().Unix() - time.Now().Unix())
 	ret := &AccessTokenResponse{
 		AccessToken: atoken,

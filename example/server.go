@@ -1,10 +1,10 @@
 package main
 
 import (
-	"net/http"
-	"log"
 	"github.com/tsingsun/go-oauth2"
 	"github.com/tsingsun/go-oauth2/example/models"
+	"log"
+	"net/http"
 	"time"
 )
 

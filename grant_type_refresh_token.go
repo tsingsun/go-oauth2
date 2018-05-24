@@ -1,10 +1,10 @@
 package oauth2
 
 import (
-	"time"
-	oauthErrors "github.com/tsingsun/go-oauth2/errors"
 	"encoding/json"
 	"errors"
+	oauthErrors "github.com/tsingsun/go-oauth2/errors"
+	"time"
 )
 
 type RefreshTokenGrant struct {
@@ -54,12 +54,12 @@ func (t *RefreshTokenGrant) CanRespondToAccessTokenRequest(request *RequestWappe
 	return nil
 }
 
-func (t *RefreshTokenGrant) RespondToAccessTokenRequest(rw *RequestWapper, res ResponseTypeInterface) (error) {
+func (t *RefreshTokenGrant) RespondToAccessTokenRequest(rw *RequestWapper, res ResponseTypeInterface) error {
 	client, err := t.validateClient(rw)
 	if err != nil {
 		return err
 	}
-	payload, err := t.validateOldRefreshToken(rw,client.GetIdentifier())
+	payload, err := t.validateOldRefreshToken(rw, client.GetIdentifier())
 	if err != nil {
 		return err
 	}
@@ -91,29 +91,29 @@ func (t *RefreshTokenGrant) RespondToAccessTokenRequest(rw *RequestWapper, res R
 	return nil
 }
 
-func (t *RefreshTokenGrant) validateOldRefreshToken(rw *RequestWapper, clientId string) (*RefreshTokenPayload,error) {
+func (t *RefreshTokenGrant) validateOldRefreshToken(rw *RequestWapper, clientId string) (*RefreshTokenPayload, error) {
 	plData, err := t.Decrypt(rw.RefreshToken)
 	if err != nil {
-		return nil,oauthErrors.ErrInvalidRequest
+		return nil, oauthErrors.ErrInvalidRequest
 	}
 	payload := &RefreshTokenPayload{}
-	if err =json.Unmarshal(plData, payload); err != nil {
-		return nil,oauthErrors.ErrInvalidRequest
+	if err = json.Unmarshal(plData, payload); err != nil {
+		return nil, oauthErrors.ErrInvalidRequest
 	}
 
 	if time.Now().After(payload.ExpiresTime) {
 		// Authorization code has expired
-		return nil,oauthErrors.ErrInvalidAuthCode
+		return nil, oauthErrors.ErrInvalidAuthCode
 	}
 
 	if payload.ClientId != clientId {
 		// Authorization code was not issued to this client
-		return nil,oauthErrors.ErrInvalidAuthCode
+		return nil, oauthErrors.ErrInvalidAuthCode
 	}
 	if t.RefreshTokenRepository.IsRefreshTokenRevoked(payload.RefreshTokenId) {
-		return nil,oauthErrors.ErrInvalidRefreshToken
+		return nil, oauthErrors.ErrInvalidRefreshToken
 	}
-	return payload,nil
+	return payload, nil
 }
 
 func (t *RefreshTokenGrant) issueRefreshToken(accessToken AccessTokenEntityInterface) (RefreshTokenEntityInterface, error) {
@@ -128,4 +128,3 @@ func (t *RefreshTokenGrant) issueRefreshToken(accessToken AccessTokenEntityInter
 	}
 	return nil, errors.New("persist refresh token error")
 }
-

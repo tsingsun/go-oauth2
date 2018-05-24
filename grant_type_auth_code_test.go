@@ -1,14 +1,14 @@
 package oauth2_test
 
 import (
-	"testing"
+	"encoding/json"
 	"github.com/golang/mock/gomock"
 	"github.com/tsingsun/go-oauth2"
-	mocks "github.com/tsingsun/go-oauth2/mocks"
-	"time"
-	"strings"
 	"github.com/tsingsun/go-oauth2/errors"
-	"encoding/json"
+	mocks "github.com/tsingsun/go-oauth2/mocks"
+	"strings"
+	"testing"
+	"time"
 )
 
 const (
@@ -18,8 +18,7 @@ const (
 )
 
 func TestAuthCodeGrant_GetIdentifier(t *testing.T) {
-	grant := &oauth2.AuthCodeGrant{
-	}
+	grant := &oauth2.AuthCodeGrant{}
 	if grant.GetIdentifier() != "authorization_code" {
 		t.Error()
 	}
@@ -299,9 +298,9 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestBadRedirectUriArray(t *testin
 
 func TestAuthCodeGrant_CompleteAuthorizationRequest(t *testing.T) {
 	authReqest := &oauth2.AuthorizationRequest{
-		Client:                  new(oauth2.ClientEntity),
-		GrantType:               oauth2.AuthCodeGrantType,
-		User:                    new(User),
+		Client:    new(oauth2.ClientEntity),
+		GrantType: oauth2.AuthCodeGrantType,
+		User:      new(User),
 		IsAuthorizationApproved: true,
 	}
 	mockCtl := gomock.NewController(t)
@@ -333,7 +332,7 @@ func mockAccessTokenGrant(t *testing.T) *oauth2.AuthCodeGrant {
 	scopeEntity := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
 	scopeRep.EXPECT().GetScopeEntityByIdentifier(gomock.Any()).Return(scopeEntity)
-	scopeRep.EXPECT().FinalizeScopes(gomock.Any(), gomock.Any(), client, gomock.Any(), ).Return([]oauth2.ScopeEntityInterface{scopeEntity})
+	scopeRep.EXPECT().FinalizeScopes(gomock.Any(), gomock.Any(), client, gomock.Any()).Return([]oauth2.ScopeEntityInterface{scopeEntity})
 
 	accessRep := mocks.NewMockAccessTokenRepositoryInterface(mockCtl)
 	accessRep.EXPECT().GetNewToken(gomock.Any(), gomock.Any(), gomock.Any()).Return(new(AccessToken))

@@ -1,8 +1,8 @@
 package oauth2_test
 
 import (
-	"testing"
 	"github.com/tsingsun/go-oauth2"
+	"testing"
 )
 
 func TestGenerateUniqueIdentifier(t *testing.T) {

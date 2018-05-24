@@ -11,16 +11,21 @@ type AccessTokenEntity struct {
 	Entity
 }
 
-func (a *AccessTokenEntity) ConvertToJWT(signKey []byte) string  {
+func (a *AccessTokenEntity) ConvertToJWT(signKey []byte) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
-	claims := jwt.StandardClaims{}
-	claims.ExpiresAt = a.GetExpiryDateTime().Unix()
-	claims.IssuedAt = time.Now().Unix()
-	claims.Subject = ConvertScopes2String(a.GetScopes())
-	claims.Id = a.GetIdentifier()
+	claims := jwt.StandardClaims{
+		ExpiresAt: a.GetExpiryDateTime().Unix(),
+		IssuedAt:  time.Now().Unix(),
+		Audience:  a.GetUserIdentifier(),
+		Subject:   ConvertScopes2String(a.GetScopes()),
+		Id:        a.GetIdentifier(),
+	}
+
 	token.Claims = claims
 
-	tokenString, _ := token.SignedString(signKey)
-	//TODO error handle
-	return tokenString
+	if tokenString, err := token.SignedString(signKey); err != nil {
+		return "", err
+	} else {
+		return tokenString, nil
+	}
 }

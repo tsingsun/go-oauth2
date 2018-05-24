@@ -1,10 +1,10 @@
 package oauth2
 
 import (
-	"time"
-	oauthErrors "github.com/tsingsun/go-oauth2/errors"
 	"errors"
+	oauthErrors "github.com/tsingsun/go-oauth2/errors"
 	"strconv"
+	"time"
 )
 
 type ImplicitGrant struct {
@@ -56,7 +56,7 @@ func (c *ImplicitGrant) CanRespondToAuthorizationRequest(request *RequestWapper)
 func (c *ImplicitGrant) ValidateAuthorizationRequest(request *RequestWapper) (*AuthorizationRequest, error) {
 	client := c.clientRepository.GetClientEntity(request.ClientId, c.GetIdentifier(), "", false)
 	if client == nil {
-		return nil,oauthErrors.ErrInvalidClient
+		return nil, oauthErrors.ErrInvalidClient
 	}
 	var rUri string = request.RedirectUri
 	if request.RedirectUri != "" {
@@ -64,12 +64,12 @@ func (c *ImplicitGrant) ValidateAuthorizationRequest(request *RequestWapper) (*A
 			return nil, err
 		}
 	} else if len(client.GetRedirectUri()) != 1 {
-		return nil,oauthErrors.ErrInvalidClient
+		return nil, oauthErrors.ErrInvalidClient
 	} else {
 		rUri = client.GetRedirectUri()[0]
 	}
 
-	scopes, err := c.validateScopes(request.Scope);
+	scopes, err := c.validateScopes(request.Scope)
 	if err != nil {
 		return nil, err
 	}
@@ -83,9 +83,9 @@ func (c *ImplicitGrant) ValidateAuthorizationRequest(request *RequestWapper) (*A
 	return authorizationRequest, nil
 }
 
-func (c *ImplicitGrant) CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse,error) {
+func (c *ImplicitGrant) CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse, error) {
 	if authorizationRequest.User == nil {
-		return nil,errors.New("An instance of UserEntityInterface should be set on the AuthorizationRequest")
+		return nil, errors.New("An instance of UserEntityInterface should be set on the AuthorizationRequest")
 	}
 	var finalRedirectUri string
 	if authorizationRequest.RedirectUri == "" {
@@ -99,21 +99,26 @@ func (c *ImplicitGrant) CompleteAuthorizationRequest(authorizationRequest *Autho
 	}
 
 	if authorizationRequest.IsAuthorizationApproved {
-		accessToken,err := c.issueAccessToken(c.AccessTokenTTL, authorizationRequest.Client, authorizationRequest.User.GetIdentifier(), authorizationRequest.Scopes)
+		accessToken, err := c.issueAccessToken(c.AccessTokenTTL, authorizationRequest.Client, authorizationRequest.User.GetIdentifier(), authorizationRequest.Scopes)
 		if err != nil {
-			return nil,err
+			return nil, err
+		}
+		var atStr string
+		atStr, err = accessToken.ConvertToJWT(c.encryptionKey)
+		if err != nil {
+			return nil, err
 		}
 		ttl := (int)(accessToken.GetExpiryDateTime().Sub(time.Now()).Seconds())
 		params := map[string]string{
-			"access_token":accessToken.ConvertToJWT(c.encryptionKey),
-			"token_type":"bearer",
-			"expires_in":strconv.Itoa(ttl),
-			"state":authorizationRequest.State,
+			"access_token": atStr,
+			"token_type":   "bearer",
+			"expires_in":   strconv.Itoa(ttl),
+			"state":        authorizationRequest.State,
 		}
 		res := &RedirectTypeResponse{
-			RedirectUri:MakeRedirectUri(finalRedirectUri,params,"#"),
+			RedirectUri: MakeRedirectUri(finalRedirectUri, params, "#"),
 		}
-		return res,nil
+		return res, nil
 	}
-	return nil,oauthErrors.ErrAccessDenied
+	return nil, oauthErrors.ErrAccessDenied
 }

@@ -1,15 +1,15 @@
 package oauth2_test
 
 import (
-	"testing"
-	"reflect"
 	"fmt"
 	"github.com/tsingsun/go-oauth2"
+	"reflect"
+	"testing"
 )
 
-func TestResponseType_New(t *testing.T)  {
+func TestResponseType_New(t *testing.T) {
 	rtIns := defaultService.Options().DefaultResponseType
-	rtType :=reflect.TypeOf(rtIns)
+	rtType := reflect.TypeOf(rtIns)
 	fmt.Print(rtType)
 	ptr := reflect.New(rtType.Elem())
 	val := ptr.Elem()
@@ -18,7 +18,7 @@ func TestResponseType_New(t *testing.T)  {
 	fmt.Print(rtIns)
 }
 
-func TestReflect(t *testing.T)  {
+func TestReflect(t *testing.T) {
 	type Product struct {
 		Name  string
 		Price string

@@ -5,7 +5,6 @@ import "github.com/tsingsun/go-oauth2"
 type AccessToken struct {
 	oauth2.AccessTokenRepositoryInterface
 	oauth2.AccessTokenEntity
-
 }
 
 func (a *AccessToken) GetNewToken(ce oauth2.ClientEntityInterface, scopes []oauth2.ScopeEntityInterface, userIdentifier string) oauth2.AccessTokenEntityInterface {
@@ -26,5 +25,5 @@ func (a *AccessToken) RevokeAccessToken(tokenId string) {
 }
 
 func (a *AccessToken) IsAccessTokenRevoked(tokenId string) bool {
-	return  true
+	return true
 }

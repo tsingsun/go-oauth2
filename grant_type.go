@@ -3,9 +3,9 @@ package oauth2
 import (
 	"errors"
 	oauthError "github.com/tsingsun/go-oauth2/errors"
+	"math/rand"
 	"strings"
 	"time"
-	"math/rand"
 )
 
 type GrantType string

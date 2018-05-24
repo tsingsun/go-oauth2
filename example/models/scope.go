@@ -10,7 +10,7 @@ type Scope struct {
 	oauth2.ScopeRepositoryInterface
 }
 
-func (s *Scope)getIdentifier() string {
+func (s *Scope) getIdentifier() string {
 	return s.Id
 }
 
