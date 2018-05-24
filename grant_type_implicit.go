@@ -73,7 +73,7 @@ func (c *ImplicitGrant) ValidateAuthorizationRequest(request *RequestWapper) (*A
 	if err != nil {
 		return nil, err
 	}
-	scopes = c.scopeRepository.FinalizeScopes(scopes, c.GetIdentifier(), client, "")
+	scopes = c.scopeRepository.FinalizeScopes(scopes, c.GetIdentifier(), client)
 	authorizationRequest := new(AuthorizationRequest)
 	authorizationRequest.GrantType = c.GetIdentifier()
 	authorizationRequest.Client = client
@@ -99,7 +99,7 @@ func (c *ImplicitGrant) CompleteAuthorizationRequest(authorizationRequest *Autho
 	}
 
 	if authorizationRequest.IsAuthorizationApproved {
-		accessToken, err := c.issueAccessToken(c.AccessTokenTTL, authorizationRequest.Client, authorizationRequest.User.GetIdentifier(), authorizationRequest.Scopes)
+		accessToken, err := c.issueAccessToken(c.AccessTokenTTL, authorizationRequest.Client, authorizationRequest.Scopes)
 		if err != nil {
 			return nil, err
 		}

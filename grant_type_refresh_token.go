@@ -79,7 +79,7 @@ func (t *RefreshTokenGrant) RespondToAccessTokenRequest(rw *RequestWapper, res R
 	t.accessTokenRepository.RevokeAccessToken(payload.AccessTokenId)
 	t.RefreshTokenRepository.RevokeRefreshToken(payload.RefreshTokenId)
 
-	accessToken, err := t.issueAccessToken(t.AccessTokenTTL, client, payload.UserID, scopes)
+	accessToken, err := t.issueAccessToken(t.AccessTokenTTL, client, scopes)
 	refreshToken, err := t.issueRefreshToken(accessToken)
 	if err != nil {
 		return err

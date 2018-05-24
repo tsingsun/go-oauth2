@@ -11,10 +11,6 @@ type TokenInterface interface {
 	GetExpiryDateTime() time.Time
 	// Set the date time when the token expires.
 	SetExpiryDateTime(dateTime time.Time)
-	// Set the identifier of the user associated with the token.
-	SetUserIdentifier(identifier string)
-	// Get the token user's identifier.
-	GetUserIdentifier() string
 	// Get the client that the token was issued to.
 	GetClient() ClientEntityInterface
 	// Set the client that the token was issued to.
@@ -25,7 +21,6 @@ type TokenInterface interface {
 	GetScopes() []ScopeEntityInterface
 }
 
-// TODO waiting
 type AccessTokenEntityInterface interface {
 	TokenInterface
 	// Generate a JWT from the access token
@@ -45,6 +40,8 @@ type ClientEntityInterface interface {
 	GetName() string
 	// Returns the registered redirect URI (as a string).
 	GetRedirectUri() []string
+	// Get the user identity for the client
+	GetUserIdentifier() string
 }
 
 type RefreshTokenEntityInterface interface {

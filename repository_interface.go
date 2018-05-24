@@ -48,7 +48,7 @@ type ScopeRepositoryInterface interface {
 	GetScopeEntityByIdentifier(identifier string) ScopeEntityInterface
 	// Given a client, grant type and optional user identifier validate the set of scopes requested
 	//   are valid and optionally append additional scopes or remove requested scopes.
-	FinalizeScopes(scopes []ScopeEntityInterface, grantType GrantType, clientEntity ClientEntityInterface, userIdentifier string) []ScopeEntityInterface
+	FinalizeScopes(scopes []ScopeEntityInterface, grantType GrantType, clientEntity ClientEntityInterface) []ScopeEntityInterface
 }
 
 type UserRepositoryInterface interface {

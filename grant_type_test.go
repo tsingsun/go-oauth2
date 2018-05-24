@@ -7,5 +7,8 @@ import (
 
 func TestGenerateUniqueIdentifier(t *testing.T) {
 	gt := oauth2.Grant{}
-	t.Error(gt.GenerateUniqueIdentifier(40))
+	want := gt.GenerateUniqueIdentifier(40)
+	if len(want) != 40 {
+		t.Error()
+	}
 }

@@ -137,7 +137,7 @@ func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res Respo
 		return err
 	}
 
-	scopes = g.scopeRepository.FinalizeScopes(scopes, g.GetIdentifier(), client, payload.UserID)
+	scopes = g.scopeRepository.FinalizeScopes(scopes, g.GetIdentifier(), client)
 
 	if g.enabledCodeExchangeProof {
 		if rw.CodeVerifier == "" {
@@ -161,7 +161,7 @@ func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res Respo
 			return oauthErrors.ErrInvalidRequest
 		}
 	}
-	accessToken, err := g.issueAccessToken(g.AccessTokenTTL, client, payload.UserID, scopes)
+	accessToken, err := g.issueAccessToken(g.AccessTokenTTL, client, scopes)
 	refreshToken, err := g.issueRefreshToken(accessToken)
 	if err != nil {
 		return err
@@ -238,7 +238,7 @@ func (g *AuthCodeGrant) CompleteAuthorizationRequest(ar *AuthorizationRequest) (
 	}
 
 	if ar.IsAuthorizationApproved {
-		authCode, err := g.issueAuthCode(g.AuthCodeTTL, ar.Client, ar.User.GetIdentifier(), ar.RedirectUri, ar.Scopes)
+		authCode, err := g.issueAuthCode(g.AuthCodeTTL, ar.Client, ar.RedirectUri, ar.Scopes)
 		if err != nil {
 			return nil, err
 		}
@@ -248,7 +248,7 @@ func (g *AuthCodeGrant) CompleteAuthorizationRequest(ar *AuthorizationRequest) (
 			RedirectUri:         authCode.GetRedirectUri(),
 			AuthCodeId:          authCode.GetIdentifier(),
 			Scopes:              ConvertScopes2String(authCode.GetScopes()),
-			UserID:              authCode.GetUserIdentifier(),
+			UserID:              authCode.GetClient().GetUserIdentifier(),
 			ExpiresTime:         time.Now().Add(g.AuthCodeTTL),
 			CodeChallenge:       ar.CodeChallenge,
 			CodeChallengeMethod: ar.CodeChallengeMethod,
@@ -270,11 +270,10 @@ func (g *AuthCodeGrant) CompleteAuthorizationRequest(ar *AuthorizationRequest) (
 	return nil, oauthErrors.ErrAccessDenied
 }
 
-func (g *AuthCodeGrant) issueAuthCode(ttl time.Duration, client ClientEntityInterface, userIdentifier string, redirectUri string, scopes []ScopeEntityInterface) (AuthCodeEntityInterface, error) {
+func (g *AuthCodeGrant) issueAuthCode(ttl time.Duration, client ClientEntityInterface, redirectUri string, scopes []ScopeEntityInterface) (AuthCodeEntityInterface, error) {
 	authCode := g.AuthCodeRepository.GetNewAuthCode()
 	authCode.SetExpiryDateTime(time.Now().Add(ttl))
 	authCode.SetClient(client)
-	authCode.SetUserIdentifier(userIdentifier)
 	authCode.SetRedirectUri(redirectUri)
 	for _, v := range scopes {
 		authCode.AddScope(v)

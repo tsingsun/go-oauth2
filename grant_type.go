@@ -77,10 +77,9 @@ func (g *Grant) validateScopes(scopeString string) (ret []ScopeEntityInterface, 
 	return ret, nil
 }
 
-func (g *Grant) issueAccessToken(ttl time.Duration, client ClientEntityInterface, userIdentifier string, scopes []ScopeEntityInterface) (AccessTokenEntityInterface, error) {
-	accessToken := g.accessTokenRepository.GetNewToken(client, scopes, userIdentifier)
+func (g *Grant) issueAccessToken(ttl time.Duration, client ClientEntityInterface, scopes []ScopeEntityInterface) (AccessTokenEntityInterface, error) {
+	accessToken := g.accessTokenRepository.GetNewToken(client, scopes, client.GetUserIdentifier())
 	accessToken.SetClient(client)
-	accessToken.SetUserIdentifier(userIdentifier)
 	accessToken.SetExpiryDateTime(time.Now().Add(ttl))
 	for _, v := range scopes {
 		accessToken.AddScope(v)

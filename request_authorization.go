@@ -5,7 +5,7 @@ type AuthorizationRequest struct {
 	GrantType GrantType
 	// The client identifier
 	Client ClientEntityInterface
-	//TODO
+	// the User identifier
 	User UserEntityInterface
 	// An array of scope identifiers
 	Scopes []ScopeEntityInterface

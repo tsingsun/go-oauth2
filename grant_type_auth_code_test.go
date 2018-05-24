@@ -332,7 +332,7 @@ func mockAccessTokenGrant(t *testing.T) *oauth2.AuthCodeGrant {
 	scopeEntity := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
 	scopeRep.EXPECT().GetScopeEntityByIdentifier(gomock.Any()).Return(scopeEntity)
-	scopeRep.EXPECT().FinalizeScopes(gomock.Any(), gomock.Any(), client, gomock.Any()).Return([]oauth2.ScopeEntityInterface{scopeEntity})
+	scopeRep.EXPECT().FinalizeScopes(gomock.Any(), gomock.Any(), client).Return([]oauth2.ScopeEntityInterface{scopeEntity})
 
 	accessRep := mocks.NewMockAccessTokenRepositoryInterface(mockCtl)
 	accessRep.EXPECT().GetNewToken(gomock.Any(), gomock.Any(), gomock.Any()).Return(new(AccessToken))

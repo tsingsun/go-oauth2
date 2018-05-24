@@ -288,15 +288,15 @@ func (mr *MockScopeRepositoryInterfaceMockRecorder) GetScopeEntityByIdentifier(i
 }
 
 // FinalizeScopes mocks base method
-func (m *MockScopeRepositoryInterface) FinalizeScopes(scopes []go_oauth2.ScopeEntityInterface, grantType go_oauth2.GrantType, clientEntity go_oauth2.ClientEntityInterface, userIdentifier string) []go_oauth2.ScopeEntityInterface {
-	ret := m.ctrl.Call(m, "FinalizeScopes", scopes, grantType, clientEntity, userIdentifier)
+func (m *MockScopeRepositoryInterface) FinalizeScopes(scopes []go_oauth2.ScopeEntityInterface, grantType go_oauth2.GrantType, clientEntity go_oauth2.ClientEntityInterface) []go_oauth2.ScopeEntityInterface {
+	ret := m.ctrl.Call(m, "FinalizeScopes", scopes, grantType, clientEntity)
 	ret0, _ := ret[0].([]go_oauth2.ScopeEntityInterface)
 	return ret0
 }
 
 // FinalizeScopes indicates an expected call of FinalizeScopes
-func (mr *MockScopeRepositoryInterfaceMockRecorder) FinalizeScopes(scopes, grantType, clientEntity, userIdentifier interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FinalizeScopes", reflect.TypeOf((*MockScopeRepositoryInterface)(nil).FinalizeScopes), scopes, grantType, clientEntity, userIdentifier)
+func (mr *MockScopeRepositoryInterfaceMockRecorder) FinalizeScopes(scopes, grantType, clientEntity interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FinalizeScopes", reflect.TypeOf((*MockScopeRepositoryInterface)(nil).FinalizeScopes), scopes, grantType, clientEntity)
 }
 
 // MockUserRepositoryInterface is a mock of UserRepositoryInterface interface

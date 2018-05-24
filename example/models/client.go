@@ -15,11 +15,12 @@ type ClientRepository struct {
 func (c *ClientRepository) GetClientEntity(clientIdentifier string, grantType oauth2.GrantType, clientSecret string, mustValidateSecret bool) oauth2.ClientEntityInterface {
 	cl := &Client{
 		Entity: oauth2.Entity{
-			Identifier: "user01",
+			Identifier: "client01",
 		},
 		ClientEntity: oauth2.ClientEntity{
-			Name:        "name01",
-			RedirectUri: []string{"http://localhost"},
+			Name:           "name01",
+			RedirectUri:    []string{"http://localhost"},
+			UserIdentifier: "user01",
 		},
 	}
 	return cl

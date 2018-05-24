@@ -50,7 +50,7 @@ func (r *BearerTokenResponse) GenerateResponse() *AccessTokenResponse {
 			RefreshTokenId: r.RefreshToken.GetIdentifier(),
 			AccessTokenId:  r.AccessToken.GetIdentifier(),
 			Scopes:         ConvertScopes2String(r.AccessToken.GetScopes()),
-			UserID:         r.AccessToken.GetUserIdentifier(),
+			UserID:         r.AccessToken.GetClient().GetUserIdentifier(),
 			ExpiresTime:    r.RefreshToken.GetExpiryDateTime(),
 		}
 		bData, _ := json.Marshal(payload)

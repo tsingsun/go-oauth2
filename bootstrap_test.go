@@ -84,7 +84,7 @@ func (s *ScopeRepository) GetScopeEntityByIdentifier(identifier string) oauth2.S
 	return &Scope{}
 }
 
-func (s *ScopeRepository) FinalizeScopes(scopes []oauth2.ScopeEntityInterface, grantType oauth2.GrantType, clientEntity oauth2.ClientEntityInterface, userIdentifier string) []oauth2.ScopeEntityInterface {
+func (s *ScopeRepository) FinalizeScopes(scopes []oauth2.ScopeEntityInterface, grantType oauth2.GrantType, clientEntity oauth2.ClientEntityInterface) []oauth2.ScopeEntityInterface {
 	return []oauth2.ScopeEntityInterface{&Scope{}}
 }
 

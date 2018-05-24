@@ -51,8 +51,8 @@ func (c *ClientCredentialsGrant) RespondToAccessTokenRequest(req *RequestWapper,
 	scopes, _ := c.validateScopes(req.Scope)
 
 	// Finalize the requested scopes
-	finalizedScopes := c.scopeRepository.FinalizeScopes(scopes, c.GetIdentifier(), client, "")
-	accessToken, err := c.issueAccessToken(c.AccessTokenTTL, client, "", finalizedScopes)
+	finalizedScopes := c.scopeRepository.FinalizeScopes(scopes, c.GetIdentifier(), client)
+	accessToken, err := c.issueAccessToken(c.AccessTokenTTL, client, finalizedScopes)
 	if err != nil {
 		return err
 	}
