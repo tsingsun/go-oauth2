@@ -7,7 +7,6 @@ import (
 type TokenEntity struct {
 	scopes         map[string]ScopeEntityInterface
 	expiryDataTime time.Time
-	userIdentifier string
 	client         ClientEntityInterface
 }
 
@@ -32,13 +31,6 @@ func (t *TokenEntity) GetExpiryDateTime() time.Time {
 
 func (t *TokenEntity) SetExpiryDateTime(time time.Time) {
 	t.expiryDataTime = time
-}
-
-func (t *TokenEntity) SetUserIdentifier(identity string) {
-	t.userIdentifier = identity
-}
-func (t *TokenEntity) GetUserIdentifier() string {
-	return t.userIdentifier
 }
 
 func (t *TokenEntity) GetClient() ClientEntityInterface {

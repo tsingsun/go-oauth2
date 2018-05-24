@@ -16,7 +16,7 @@ func (a *AccessTokenEntity) ConvertToJWT(signKey []byte) (string, error) {
 	claims := jwt.StandardClaims{
 		ExpiresAt: a.GetExpiryDateTime().Unix(),
 		IssuedAt:  time.Now().Unix(),
-		Audience:  a.GetUserIdentifier(),
+		Audience:  a.GetClient().GetUserIdentifier(),
 		Subject:   ConvertScopes2String(a.GetScopes()),
 		Id:        a.GetIdentifier(),
 	}
