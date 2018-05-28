@@ -10,12 +10,11 @@ import (
 func TestResponseType_New(t *testing.T) {
 	rtIns := defaultService.Options().DefaultResponseType
 	rtType := reflect.TypeOf(rtIns)
-	fmt.Print(rtType)
 	ptr := reflect.New(rtType.Elem())
 	val := ptr.Elem()
-	val1 := val.Interface().(oauth2.BearerTokenResponse)
-	fmt.Print(val1)
-	fmt.Print(rtIns)
+	if _, ok := val.Interface().(oauth2.BearerTokenResponse); !ok {
+		t.Error()
+	}
 }
 
 func TestReflect(t *testing.T) {

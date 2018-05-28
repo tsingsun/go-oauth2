@@ -20,6 +20,7 @@ func NewImplicitGrant(options *Options) *ImplicitGrant {
 	grant.SetScopeRepository(options.ScopeRepository)
 	grant.AccessTokenTTL = 7200 * time.Second
 	grant.SetEncryptionKey(options.EncryptionKey)
+	grant.SetPrivateKey(options.PrivateKey)
 	return grant
 }
 
@@ -40,6 +41,10 @@ func setRefreshTokenRepository(refreshTokenRepository RefreshTokenRepositoryInte
 }
 
 func (c *ImplicitGrant) CanRespondToAccessTokenRequest(request *RequestWapper) error {
+	return oauthErrors.ErrInvalidGrant
+}
+
+func (c *ImplicitGrant) RespondToAccessTokenRequest(request *RequestWapper, responseType ResponseTypeInterface) error {
 	return oauthErrors.ErrInvalidGrant
 }
 
@@ -104,7 +109,7 @@ func (c *ImplicitGrant) CompleteAuthorizationRequest(authorizationRequest *Autho
 			return nil, err
 		}
 		var atStr string
-		atStr, err = accessToken.ConvertToJWT(c.encryptionKey)
+		atStr, err = accessToken.ConvertToJWT(c.privateKey)
 		if err != nil {
 			return nil, err
 		}

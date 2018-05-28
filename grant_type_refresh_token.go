@@ -32,6 +32,7 @@ func NewRefreshTokenGrant(options *Options) *RefreshTokenGrant {
 	grant.SetClientRepository(options.ClientRepository)
 	grant.SetScopeRepository(options.ScopeRepository)
 	grant.SetAccessTokenRepository(options.AccessTokenRepository)
+	grant.SetPrivateKey(options.PrivateKey)
 	return grant
 }
 
@@ -127,4 +128,16 @@ func (t *RefreshTokenGrant) issueRefreshToken(accessToken AccessTokenEntityInter
 		}
 	}
 	return nil, errors.New("persist refresh token error")
+}
+
+func (t *RefreshTokenGrant) CanRespondToAuthorizationRequest(request *RequestWapper) error {
+	return oauthErrors.ErrInvalidGrant
+}
+
+func (t *RefreshTokenGrant) CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse, error) {
+	return nil, oauthErrors.ErrInvalidGrant
+}
+
+func (t *RefreshTokenGrant) ValidateAuthorizationRequest(request *RequestWapper) (*AuthorizationRequest, error) {
+	return nil, oauthErrors.ErrInvalidGrant
 }

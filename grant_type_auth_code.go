@@ -48,6 +48,7 @@ func NewAuthCodeGrant(options *Options) *AuthCodeGrant {
 	grant.SetClientRepository(options.ClientRepository)
 	grant.SetScopeRepository(options.ScopeRepository)
 	grant.SetAccessTokenRepository(options.AccessTokenRepository)
+	grant.SetPrivateKey(options.PrivateKey)
 	return grant
 }
 

@@ -24,7 +24,7 @@ type TokenInterface interface {
 type AccessTokenEntityInterface interface {
 	TokenInterface
 	// Generate a JWT from the access token
-	ConvertToJWT(signKey []byte) (string, error)
+	ConvertToJWT(signKey interface{}) (string, error)
 }
 
 type AuthCodeEntityInterface interface {

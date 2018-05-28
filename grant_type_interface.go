@@ -1,5 +1,7 @@
 package oauth2
 
+import "crypto/rsa"
+
 // Grant type interface.
 type GrantTypeInterface interface {
 	// Return the grant identifier that can be used in matching up requests.
@@ -33,7 +35,11 @@ type GrantTypeInterface interface {
 	// Set the scope repository.
 	SetScopeRepository(scopeRepository ScopeRepositoryInterface)
 	// Set the path to the private key
-	SetPrivateKey(privateKey string)
+	SetPrivateKey(privateKey *rsa.PrivateKey)
 	// Set the encryption key
-	SetEncryptionKey(key string)
+	SetEncryptionKey(key []byte)
+	// Get the encryption key
+	GetEncryptionKey() []byte
+	// Get the path to the private key
+	GetPrivateKey() *rsa.PrivateKey
 }

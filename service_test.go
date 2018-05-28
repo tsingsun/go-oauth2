@@ -7,7 +7,10 @@ import (
 
 func TestNewService(t *testing.T) {
 	var ce = &ClientRepository{}
-	service := oauth2.NewService(oauth2.SetClientRepository(ce))
+	service := oauth2.NewService(
+		oauth2.SetClientRepository(ce),
+		oauth2.SetPrivateKey(PRIVATE_KEY),
+	)
 	if service.ClientRepository() != ce {
 		t.Errorf("internal fail")
 	}

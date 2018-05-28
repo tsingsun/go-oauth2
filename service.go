@@ -12,22 +12,28 @@ type Option func(*Options)
 type GetUser func(userId string) (UserEntityInterface, error)
 
 type Service struct {
-	opts       Options
+	opts       *Options
 	GrantTypes map[GrantType]GrantTypeInterface
 	GetUser    GetUser
 }
 
 func NewService(opts ...Option) *Service {
 	options := NewOptions(opts...)
-
+	checkOptions(options)
 	return &Service{
 		opts:       options,
 		GrantTypes: make(map[GrantType]GrantTypeInterface),
 	}
 }
 
+func checkOptions(opts *Options) {
+	if opts.PrivateKey == nil {
+		panic("please set the private key!")
+	}
+}
+
 func (s *Service) Options() *Options {
-	return &s.opts
+	return s.opts
 }
 
 func (s *Service) RegisterGrantType(gti GrantTypeInterface) {
@@ -85,10 +91,16 @@ func (s *Service) HandleAccessTokenRequestInternal(req *RequestWapper) (*AccessT
 		return nil, err
 	}
 	rt := s.createResponseType()
+	rt.SetEncryptionKey(handle.GetEncryptionKey())
+	rt.SetPrivateKey(handle.GetPrivateKey())
 	if err := handle.RespondToAccessTokenRequest(req, rt); err != nil {
 		return nil, err
 	}
-	return rt.GenerateResponse(), nil
+	if res := rt.GenerateResponse(); res.Error != nil {
+		return nil, res.Error
+	} else {
+		return res, nil
+	}
 }
 
 func (s *Service) ValidateAuthorizationRequest(w http.ResponseWriter, r *http.Request) (ar *AuthorizationRequest, err error) {

@@ -37,7 +37,7 @@ func TestRefreshTokenGrant_RespondToAccessTokenRequest(t *testing.T) {
 	grant.SetClientRepository(clientRepositoryMock)
 	grant.SetScopeRepository(scopeRepositoryMock)
 	grant.SetAccessTokenRepository(accessTokenRepositoryMock)
-	grant.SetEncryptionKey(ENCRYPTION_KEY)
+	grant.SetEncryptionKey([]byte(ENCRYPTION_KEY))
 	payload := oauth2.RefreshTokenPayload{
 		ClientId:       "foo",
 		RefreshTokenId: "abcdefg",

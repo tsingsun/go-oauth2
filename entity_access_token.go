@@ -11,14 +11,25 @@ type AccessTokenEntity struct {
 	Entity
 }
 
-func (a *AccessTokenEntity) ConvertToJWT(signKey []byte) (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := jwt.StandardClaims{
-		ExpiresAt: a.GetExpiryDateTime().Unix(),
-		IssuedAt:  time.Now().Unix(),
-		Audience:  a.GetClient().GetUserIdentifier(),
-		Subject:   ConvertScopes2String(a.GetScopes()),
-		Id:        a.GetIdentifier(),
+// Structured version of Claims Section, as referenced at
+// https://tools.ietf.org/html/rfc7519#section-4.1
+// See examples for how to use this with your own claim types
+type JwtPayloadClaims struct {
+	jwt.StandardClaims
+	Scopes string `json:"scopes,omitempty"`
+}
+
+func (a *AccessTokenEntity) ConvertToJWT(signKey interface{}) (string, error) {
+	token := jwt.New(jwt.SigningMethodRS256)
+	claims := JwtPayloadClaims{
+		StandardClaims: jwt.StandardClaims{
+			Audience:  a.GetClient().GetIdentifier(),
+			ExpiresAt: a.GetExpiryDateTime().Unix(),
+			Id:        a.GetIdentifier(),
+			IssuedAt:  time.Now().Unix(),
+			Subject:   a.GetClient().GetUserIdentifier(),
+		},
+		Scopes: ConvertScopes2String(a.GetScopes()),
 	}
 
 	token.Claims = claims

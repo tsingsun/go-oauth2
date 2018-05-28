@@ -18,6 +18,7 @@ func NewClientCredentialsGrant(options *Options) *ClientCredentialsGrant {
 	grant.SetScopeRepository(options.ScopeRepository)
 	grant.AccessTokenTTL = 2 * time.Hour
 	grant.SetEncryptionKey(options.EncryptionKey)
+	grant.SetPrivateKey(options.PrivateKey)
 	return grant
 }
 
@@ -59,4 +60,16 @@ func (c *ClientCredentialsGrant) RespondToAccessTokenRequest(req *RequestWapper,
 	res.SetAccessToken(accessToken)
 	res.SetEncryptionKey(c.encryptionKey)
 	return nil
+}
+
+func (c *ClientCredentialsGrant) CanRespondToAuthorizationRequest(request *RequestWapper) error {
+	return errors.ErrInvalidGrant
+}
+
+func (c *ClientCredentialsGrant) CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse, error) {
+	return nil, errors.ErrInvalidGrant
+}
+
+func (c *ClientCredentialsGrant) ValidateAuthorizationRequest(request *RequestWapper) (*AuthorizationRequest, error) {
+	return nil, errors.ErrInvalidGrant
 }

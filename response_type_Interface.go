@@ -1,6 +1,9 @@
 package oauth2
 
-import "net/http"
+import (
+	"crypto/rsa"
+	"net/http"
+)
 
 type ResponseTypeInterface interface {
 	// Set accessToken entity
@@ -10,4 +13,5 @@ type ResponseTypeInterface interface {
 	GenerateHttpResponse(response *http.Response)
 	GenerateResponse() *AccessTokenResponse
 	SetEncryptionKey(key []byte)
+	SetPrivateKey(key *rsa.PrivateKey)
 }

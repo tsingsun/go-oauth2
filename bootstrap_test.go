@@ -11,6 +11,7 @@ var (
 
 const (
 	ENCRYPTION_KEY = "cxPrjjamV6wI82ka"
+	PRIVATE_KEY    = "./example/rsa_auth_pkcs8.pem"
 )
 
 type Client struct {
@@ -141,6 +142,7 @@ func init() {
 		oauth2.SetResponseType(&oauth2.BearerTokenResponse{}),
 		oauth2.SetScopeRepository(&ScopeRepository{}),
 		oauth2.SetEncryptionKey("abcd"),
+		oauth2.SetPrivateKey(PRIVATE_KEY),
 	)
 	accessTokenTTL := 7200 * time.Second
 	grant1 := oauth2.NewClientCredentialsGrant(defaultService.Options())

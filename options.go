@@ -1,9 +1,18 @@
 package oauth2
 
+import (
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/asn1"
+	"encoding/pem"
+	"errors"
+	"io/ioutil"
+)
+
 type Options struct {
-	PrivateKey             string
-	PublickKey             string
-	EncryptionKey          string
+	PrivateKey             *rsa.PrivateKey
+	PublickKey             *rsa.PublicKey
+	EncryptionKey          []byte
 	ClientRepository       ClientRepositoryInterface
 	AccessTokenRepository  AccessTokenRepositoryInterface
 	ScopeRepository        ScopeRepositoryInterface
@@ -12,10 +21,10 @@ type Options struct {
 	DefaultResponseType    ResponseTypeInterface
 }
 
-func NewOptions(opts ...Option) Options {
-	opt := Options{}
+func NewOptions(opts ...Option) *Options {
+	opt := &Options{}
 	for _, o := range opts {
-		o(&opt)
+		o(opt)
 	}
 	if opt.DefaultResponseType == nil {
 		opt.DefaultResponseType = new(BearerTokenResponse)
@@ -23,9 +32,54 @@ func NewOptions(opts ...Option) Options {
 	return opt
 }
 
+func SetPrivateKey(file string) Option {
+	privateKey, err := ioutil.ReadFile(file)
+	if err != nil {
+		panic(err)
+	}
+
+	block, _ := pem.Decode(privateKey)
+	if block == nil {
+		panic(errors.New("private key error"))
+	}
+	priv, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		panic(err)
+	}
+	pri, ok := priv.(*rsa.PrivateKey)
+	if !ok {
+		panic(errors.New("private key error"))
+	}
+	return func(options *Options) {
+		options.PrivateKey = pri
+	}
+}
+
+func SetPublicKey(file string) Option {
+	publicKey, err := ioutil.ReadFile(file)
+	if err != nil {
+		panic(err)
+	}
+
+	block, _ := pem.Decode(publicKey)
+	if block == nil {
+		panic(errors.New("private key error"))
+	}
+	pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		panic(err)
+	}
+	pub, ok := pubInterface.(*rsa.PublicKey)
+	if !ok {
+		panic(errors.New("private key error"))
+	}
+	return func(options *Options) {
+		options.PublickKey = pub
+	}
+}
 func SetEncryptionKey(p string) Option {
 	return func(options *Options) {
-		options.EncryptionKey = p
+		options.EncryptionKey = []byte(p)
 	}
 }
 
@@ -63,4 +117,22 @@ func SetRefreshTokenRepository(rt RefreshTokenRepositoryInterface) Option {
 	return func(options *Options) {
 		options.RefreshTokenRepository = rt
 	}
+}
+
+// MarshalPKCS8PrivateKey 私钥解析
+func marshalPKCS8PrivateKey(key *rsa.PrivateKey) []byte {
+
+	info := struct {
+		Version             int
+		PrivateKeyAlgorithm []asn1.ObjectIdentifier
+		PrivateKey          []byte
+	}{}
+
+	info.Version = 0
+	info.PrivateKeyAlgorithm = make([]asn1.ObjectIdentifier, 1)
+	info.PrivateKeyAlgorithm[0] = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
+	info.PrivateKey = x509.MarshalPKCS1PrivateKey(key)
+	k, _ := asn1.Marshal(info)
+	return k
+
 }

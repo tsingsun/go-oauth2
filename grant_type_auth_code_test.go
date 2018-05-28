@@ -313,7 +313,7 @@ func TestAuthCodeGrant_CompleteAuthorizationRequest(t *testing.T) {
 		RefreshTokenRepository: mocks.NewMockRefreshTokenRepositoryInterface(mockCtl),
 		AuthCodeTTL:            10 * time.Minute,
 	}
-	grant.SetEncryptionKey(ENCRYPTION_KEY)
+	grant.SetEncryptionKey([]byte(ENCRYPTION_KEY))
 	_, err := grant.CompleteAuthorizationRequest(authReqest)
 	if err != nil {
 		t.Error(err.Error())
@@ -351,11 +351,10 @@ func mockAccessTokenGrant(t *testing.T) *oauth2.AuthCodeGrant {
 		RefreshTokenRepository: refreshRep,
 		AuthCodeTTL:            10 * time.Minute,
 	}
-	grant.GrantTypeInterface = grant
 	grant.SetClientRepository(clientRep)
 	grant.SetScopeRepository(scopeRep)
 	grant.SetAccessTokenRepository(accessRep)
-	grant.SetEncryptionKey(ENCRYPTION_KEY)
+	grant.SetEncryptionKey([]byte(ENCRYPTION_KEY))
 	return grant
 }
 

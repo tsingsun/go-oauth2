@@ -1,17 +1,17 @@
 package oauth2
 
 import (
+	"crypto/rsa"
 	"encoding/json"
 	"net/http"
 	"time"
 )
 
 type BearerTokenResponse struct {
-	ResponseTypeInterface
-	AccessToken   AccessTokenEntityInterface
-	RefreshToken  RefreshTokenEntityInterface
-	EncryptionKey []byte
+	AccessToken  AccessTokenEntityInterface
+	RefreshToken RefreshTokenEntityInterface
 	Crypt
+	PrivateKey *rsa.PrivateKey
 }
 
 func (r *BearerTokenResponse) SetAccessToken(accessToken AccessTokenEntityInterface) {
@@ -27,12 +27,16 @@ func (r *BearerTokenResponse) GenerateHttpResponse(response *http.Response) {
 }
 
 func (r *BearerTokenResponse) SetEncryptionKey(key []byte) {
-	r.EncryptionKey = key
 	r.Crypt.SetEncryptionKey(key)
 }
 
+func (r *BearerTokenResponse) SetPrivateKey(key *rsa.PrivateKey) {
+	r.PrivateKey = key
+}
+
 func (r *BearerTokenResponse) GenerateResponse() *AccessTokenResponse {
-	atoken, err := r.AccessToken.ConvertToJWT(r.EncryptionKey)
+	atoken, err := r.AccessToken.ConvertToJWT(r.PrivateKey)
+
 	if err != nil {
 		return &AccessTokenResponse{
 			Error: err,

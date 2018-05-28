@@ -1,6 +1,7 @@
 package oauth2
 
 import (
+	"crypto/rsa"
 	"errors"
 	oauthError "github.com/tsingsun/go-oauth2/errors"
 	"math/rand"
@@ -26,13 +27,14 @@ const (
 )
 
 type Grant struct {
-	GrantTypeInterface
+	//GrantTypeInterface
 	clientRepository      ClientRepositoryInterface
 	scopeRepository       ScopeRepositoryInterface
 	accessTokenRepository AccessTokenRepositoryInterface
 	MaxGenerationAttempts int
 	defaultScope          string
 	Crypt
+	privateKey *rsa.PrivateKey
 }
 
 // Validate Client Request
@@ -132,8 +134,20 @@ func (g *Grant) SetScopeRepository(scopeRepository ScopeRepositoryInterface) {
 	g.scopeRepository = scopeRepository
 }
 
-func (g *Grant) SetEncryptionKey(key string) {
-	g.Crypt.SetEncryptionKey([]byte(key))
+func (g *Grant) SetEncryptionKey(key []byte) {
+	g.Crypt.SetEncryptionKey(key)
+}
+
+func (g *Grant) GetEncryptionKey() []byte {
+	return g.encryptionKey
+}
+
+func (g *Grant) SetPrivateKey(key *rsa.PrivateKey) {
+	g.privateKey = key
+}
+
+func (g *Grant) GetPrivateKey() *rsa.PrivateKey {
+	return g.privateKey
 }
 
 func (g *Grant) SetDefaultScope(scope string) {
