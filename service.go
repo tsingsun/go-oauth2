@@ -44,6 +44,10 @@ func (s *Service) ClientRepository() ClientRepositoryInterface {
 	return s.opts.ClientRepository
 }
 
+func (s *Service) AccessTokenRepository() AccessTokenRepositoryInterface {
+	return s.opts.AccessTokenRepository
+}
+
 func (s *Service) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
 	tq := TokenRequestFromHttp(r)
 	ret, err := s.HandleAccessTokenRequestInternal(tq)
