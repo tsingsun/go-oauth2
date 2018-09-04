@@ -6,7 +6,6 @@ import (
 	"encoding/asn1"
 	"encoding/pem"
 	"errors"
-	"io/ioutil"
 )
 
 type Options struct {
@@ -32,13 +31,8 @@ func NewOptions(opts ...Option) *Options {
 	return opt
 }
 
-func SetPrivateKey(file string) Option {
-	privateKey, err := ioutil.ReadFile(file)
-	if err != nil {
-		panic(err)
-	}
-
-	block, _ := pem.Decode(privateKey)
+func SetPrivateKey(content []byte) Option {
+	block, _ := pem.Decode(content)
 	if block == nil {
 		panic(errors.New("private key error"))
 	}
@@ -55,13 +49,8 @@ func SetPrivateKey(file string) Option {
 	}
 }
 
-func SetPublicKey(file string) Option {
-	publicKey, err := ioutil.ReadFile(file)
-	if err != nil {
-		panic(err)
-	}
-
-	block, _ := pem.Decode(publicKey)
+func SetPublicKey(content []byte) Option {
+	block, _ := pem.Decode(content)
 	if block == nil {
 		panic(errors.New("private key error"))
 	}

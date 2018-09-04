@@ -2,6 +2,7 @@ package oauth2_test
 
 import (
 	"github.com/tsingsun/go-oauth2"
+	"io/ioutil"
 	"time"
 )
 
@@ -135,14 +136,14 @@ type AuthCode struct {
 }
 
 func init() {
-
+	c,_ := ioutil.ReadFile(PRIVATE_KEY)
 	defaultService = oauth2.NewService(
 		oauth2.SetClientRepository(&ClientRepository{}),
 		oauth2.SetAccessTokenRepository(&AccessTokenRepository{}),
 		oauth2.SetResponseType(&oauth2.BearerTokenResponse{}),
 		oauth2.SetScopeRepository(&ScopeRepository{}),
 		oauth2.SetEncryptionKey("abcd"),
-		oauth2.SetPrivateKey(PRIVATE_KEY),
+		oauth2.SetPrivateKey(c),
 	)
 	accessTokenTTL := 7200 * time.Second
 	grant1 := oauth2.NewClientCredentialsGrant(defaultService.Options())

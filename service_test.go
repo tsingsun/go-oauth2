@@ -2,14 +2,16 @@ package oauth2_test
 
 import (
 	"github.com/tsingsun/go-oauth2"
+	"io/ioutil"
 	"testing"
 )
 
 func TestNewService(t *testing.T) {
 	var ce = &ClientRepository{}
+	c,_ := ioutil.ReadFile(PRIVATE_KEY)
 	service := oauth2.NewService(
 		oauth2.SetClientRepository(ce),
-		oauth2.SetPrivateKey(PRIVATE_KEY),
+		oauth2.SetPrivateKey(c),
 	)
 	if service.ClientRepository() != ce {
 		t.Errorf("internal fail")
