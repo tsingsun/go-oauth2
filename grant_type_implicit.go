@@ -58,14 +58,14 @@ func (c *ImplicitGrant) CanRespondToAuthorizationRequest(request *RequestWapper)
 	return nil
 }
 
-func (c *ImplicitGrant) ValidateAuthorizationRequest(request *RequestWapper) (*AuthorizationRequest, error) {
-	client := c.clientRepository.GetClientEntity(request.ClientId, c.GetIdentifier(), "", false)
+func (c *ImplicitGrant) ValidateAuthorizationRequest(rw *RequestWapper) (*AuthorizationRequest, error) {
+	client := c.clientRepository.GetClientEntity(rw.ctx, rw.ClientId, c.GetIdentifier(), "", false)
 	if client == nil {
 		return nil, oauthErrors.ErrInvalidClient
 	}
-	var rUri string = request.RedirectUri
-	if request.RedirectUri != "" {
-		if err := c.validateRedirectUri(request.RedirectUri, client); err != nil {
+	var rUri string = rw.RedirectUri
+	if rw.RedirectUri != "" {
+		if err := c.validateRedirectUri(rw.RedirectUri, client); err != nil {
 			return nil, err
 		}
 	} else if len(client.GetRedirectUri()) != 1 {
@@ -74,37 +74,39 @@ func (c *ImplicitGrant) ValidateAuthorizationRequest(request *RequestWapper) (*A
 		rUri = client.GetRedirectUri()[0]
 	}
 
-	scopes, err := c.validateScopes(request.Scope)
+	scopes, err := c.validateScopes(rw.ctx,rw.Scope)
 	if err != nil {
 		return nil, err
 	}
-	scopes = c.scopeRepository.FinalizeScopes(scopes, c.GetIdentifier(), client)
-	authorizationRequest := new(AuthorizationRequest)
-	authorizationRequest.GrantType = c.GetIdentifier()
-	authorizationRequest.Client = client
-	authorizationRequest.RedirectUri = rUri
-	authorizationRequest.State = request.State
-	authorizationRequest.Scopes = scopes
+	scopes = c.scopeRepository.FinalizeScopes(rw.ctx, scopes, c.GetIdentifier(), client)
+	authorizationRequest := &AuthorizationRequest{
+		GrantType:   c.GetIdentifier(),
+		Client:      client,
+		RedirectUri: rUri,
+		State:       rw.State,
+		Scopes:      scopes,
+		ctx:         rw.ctx,
+	}
 	return authorizationRequest, nil
 }
 
-func (c *ImplicitGrant) CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse, error) {
-	if authorizationRequest.User == nil {
+func (c *ImplicitGrant) CompleteAuthorizationRequest(ar *AuthorizationRequest) (*RedirectTypeResponse, error) {
+	if ar.User == nil {
 		return nil, errors.New("An instance of UserEntityInterface should be set on the AuthorizationRequest")
 	}
 	var finalRedirectUri string
-	if authorizationRequest.RedirectUri == "" {
-		if len(authorizationRequest.Client.GetRedirectUri()) > 1 {
-			finalRedirectUri = authorizationRequest.Client.GetRedirectUri()[0]
+	if ar.RedirectUri == "" {
+		if len(ar.Client.GetRedirectUri()) > 1 {
+			finalRedirectUri = ar.Client.GetRedirectUri()[0]
 		} else {
 			finalRedirectUri = ""
 		}
 	} else {
-		finalRedirectUri = authorizationRequest.RedirectUri
+		finalRedirectUri = ar.RedirectUri
 	}
 
-	if authorizationRequest.IsAuthorizationApproved {
-		accessToken, err := c.issueAccessToken(c.AccessTokenTTL, authorizationRequest.Client, authorizationRequest.Scopes)
+	if ar.IsAuthorizationApproved {
+		accessToken, err := c.issueAccessToken(ar.ctx,c.AccessTokenTTL, ar.Client, ar.Scopes)
 		if err != nil {
 			return nil, err
 		}
@@ -118,7 +120,7 @@ func (c *ImplicitGrant) CompleteAuthorizationRequest(authorizationRequest *Autho
 			"access_token": atStr,
 			"token_type":   "bearer",
 			"expires_in":   strconv.Itoa(ttl),
-			"state":        authorizationRequest.State,
+			"state":        ar.State,
 		}
 		res := &RedirectTypeResponse{
 			RedirectUri: MakeRedirectUri(finalRedirectUri, params, "#"),

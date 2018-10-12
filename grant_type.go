@@ -1,6 +1,7 @@
 package oauth2
 
 import (
+	"context"
 	"crypto/rsa"
 	"errors"
 	oauthError "github.com/tsingsun/go-oauth2/errors"
@@ -38,14 +39,14 @@ type Grant struct {
 }
 
 // Validate Client Request
-func (g *Grant) validateClient(request *RequestWapper) (ClientEntityInterface, error) {
-	grantType := request.GrantType
-	client := g.clientRepository.GetClientEntity(request.ClientId, grantType, request.ClientSecret, true)
+func (g *Grant) validateClient(rw *RequestWapper) (ClientEntityInterface, error) {
+	grantType := rw.GrantType
+	client := g.clientRepository.GetClientEntity(rw.ctx, rw.ClientId, grantType, rw.ClientSecret, true)
 
 	if client == nil {
 		return nil, oauthError.ErrInvalidClient
 	}
-	if err := g.validateRedirectUri(request.RedirectUri, client); err != nil {
+	if err := g.validateRedirectUri(rw.RedirectUri, client); err != nil {
 		return nil, err
 	}
 	return client, nil
@@ -67,10 +68,10 @@ func (g *Grant) validateRedirectUri(requestUri string, client ClientEntityInterf
 	return nil
 }
 
-func (g *Grant) validateScopes(scopeString string) (ret []ScopeEntityInterface, err error) {
+func (g *Grant) validateScopes(ctx context.Context,scopeString string) (ret []ScopeEntityInterface, err error) {
 	scopes := strings.SplitN(scopeString, ",", 0)
 	for _, v := range scopes {
-		scope := g.scopeRepository.GetScopeEntityByIdentifier(v)
+		scope := g.scopeRepository.GetScopeEntityByIdentifier(ctx,v)
 		if scope == nil {
 			err = oauthError.ErrInvalidScope
 		}
@@ -79,8 +80,8 @@ func (g *Grant) validateScopes(scopeString string) (ret []ScopeEntityInterface, 
 	return ret, nil
 }
 
-func (g *Grant) issueAccessToken(ttl time.Duration, client ClientEntityInterface, scopes []ScopeEntityInterface) (AccessTokenEntityInterface, error) {
-	accessToken := g.accessTokenRepository.GetNewToken(client, scopes, client.GetUserIdentifier())
+func (g *Grant) issueAccessToken(ctx context.Context,ttl time.Duration, client ClientEntityInterface, scopes []ScopeEntityInterface) (AccessTokenEntityInterface, error) {
+	accessToken := g.accessTokenRepository.GetNewToken(ctx,client, scopes, client.GetUserIdentifier())
 	accessToken.SetClient(client)
 	accessToken.SetExpiryDateTime(time.Now().Add(ttl))
 	for _, v := range scopes {
@@ -89,7 +90,7 @@ func (g *Grant) issueAccessToken(ttl time.Duration, client ClientEntityInterface
 	maxGenerationAttempts := g.getMaxGenerationAttempts()
 	for ; maxGenerationAttempts > 0; maxGenerationAttempts-- {
 		accessToken.SetIdentifier(g.GenerateUniqueIdentifier(40))
-		if g.accessTokenRepository.PersistNewAccessToken(accessToken) {
+		if g.accessTokenRepository.PersistNewAccessToken(ctx,accessToken) {
 			return accessToken, nil
 		}
 	}

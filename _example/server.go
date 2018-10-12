@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/tsingsun/go-oauth2"
-	"github.com/tsingsun/go-oauth2/example/models"
+	"github.com/tsingsun/go-oauth2/_example/models"
 	"log"
 	"net/http"
 	"time"
@@ -11,11 +11,11 @@ import (
 func main() {
 
 	svr := oauth2.NewService(
-		oauth2.SetClientRepository(&models.ClientRepository{}),
-		oauth2.SetAccessTokenRepository(&models.AccessToken{}),
-		oauth2.SetResponseType(&oauth2.BearerTokenResponse{}),
-		oauth2.SetScopeRepository(&models.Scope{}),
-		oauth2.SetEncryptionKey("cxPrjjamV6wI82ka3YDWJ6PydkZU2opzwRRvEEogGVo="),
+		oauth2.WithClientRepository(&models.ClientRepository{}),
+		oauth2.WithAccessTokenRepository(&models.AccessToken{}),
+		oauth2.WithResponseType(&oauth2.BearerTokenResponse{}),
+		oauth2.WithScopeRepository(&models.Scope{}),
+		oauth2.WithEncryptionKey("cxPrjjamV6wI82ka3YDWJ6PydkZU2opzwRRvEEogGVo="),
 	)
 	accessTokenTTL := 2 * time.Hour
 	clientCredentials := oauth2.NewClientCredentialsGrant(svr.Options())
@@ -34,8 +34,13 @@ func main() {
 	http.HandleFunc("/oauth2/v1/token", func(writer http.ResponseWriter, request *http.Request) {
 		svr.HandleTokenRequest(writer, request)
 	})
-	http.HandleFunc("oauth2/v1/authorize", func(writer http.ResponseWriter, request *http.Request) {
-		ar, err := svr.ValidateAuthorizationRequest(writer, request)
+	http.HandleFunc("/oauth2/v1/authorize", func(writer http.ResponseWriter, request *http.Request) {
+		svr.HandleAuthorizeRequest(writer, request)
+	})
+	// implement validateAuthorizationRequest youself,not use HandleAuthorizeRequest
+	http.HandleFunc("oauth2/v2/authorize", func(writer http.ResponseWriter, request *http.Request) {
+		tq := oauth2.AuthorizeRequestFromHttp(request)
+		ar, err := svr.ValidateAuthorizationRequest(tq)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return

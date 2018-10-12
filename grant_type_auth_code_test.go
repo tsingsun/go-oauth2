@@ -1,6 +1,7 @@
 package oauth2_test
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/golang/mock/gomock"
 	"github.com/tsingsun/go-oauth2"
@@ -37,15 +38,16 @@ func TestAuthCodeGrant_CanRespondToAuthorizationRequest(t *testing.T) {
 }
 
 func TestAuthCodeGrant_ValidateAuthorizationRequest(t *testing.T) {
+	ctx := context.Background()
 	client := &oauth2.ClientEntity{
 		RedirectUri: []string{"http://foo/bar"},
 	}
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
 	scope := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
-	scopeRep.EXPECT().GetScopeEntityByIdentifier(nil).Return(scope)
+	scopeRep.EXPECT().GetScopeEntityByIdentifier(ctx,nil).Return(scope)
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     mocks.NewMockAuthCodeRepositoryInterface(mockCtl),
@@ -68,15 +70,16 @@ func TestAuthCodeGrant_ValidateAuthorizationRequest(t *testing.T) {
 }
 
 func TestAuthCodeGrant_ValidateAuthorizationRequestCodeChallenge(t *testing.T) {
+	ctx := context.Background()
 	client := &oauth2.ClientEntity{
 		RedirectUri: []string{"http://foo/bar"},
 	}
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
 	scope := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
-	scopeRep.EXPECT().GetScopeEntityByIdentifier(nil).Return(scope)
+	scopeRep.EXPECT().GetScopeEntityByIdentifier(ctx,nil).Return(scope)
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     mocks.NewMockAuthCodeRepositoryInterface(mockCtl),
@@ -101,15 +104,16 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestCodeChallenge(t *testing.T) {
 }
 
 func TestAuthCodeGrant_ValidateAuthorizationRequestCodeChallengeInvalidLengthTooShort(t *testing.T) {
+	ctx := context.Background()
 	client := &oauth2.ClientEntity{
 		RedirectUri: []string{"http://foo/bar"},
 	}
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
 	scope := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
-	scopeRep.EXPECT().GetScopeEntityByIdentifier(nil).Return(scope)
+	scopeRep.EXPECT().GetScopeEntityByIdentifier(ctx,nil).Return(scope)
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     mocks.NewMockAuthCodeRepositoryInterface(mockCtl),
@@ -136,15 +140,16 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestCodeChallengeInvalidLengthToo
 }
 
 func TestAuthCodeGrant_ValidateAuthorizationRequestCodeChallengeInvalidLengthTooLong(t *testing.T) {
+	ctx := context.Background()
 	client := &oauth2.ClientEntity{
 		RedirectUri: []string{"http://foo/bar"},
 	}
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
 	scope := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
-	scopeRep.EXPECT().GetScopeEntityByIdentifier(nil).Return(scope)
+	scopeRep.EXPECT().GetScopeEntityByIdentifier(ctx,nil).Return(scope)
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     mocks.NewMockAuthCodeRepositoryInterface(mockCtl),
@@ -171,15 +176,16 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestCodeChallengeInvalidLengthToo
 }
 
 func TestAuthCodeGrant_ValidateAuthorizationRequestInvalidCodeChallengeMethod(t *testing.T) {
+	ctx := context.Background()
 	client := &oauth2.ClientEntity{
 		RedirectUri: []string{"http://foo/bar"},
 	}
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
 	scope := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
-	scopeRep.EXPECT().GetScopeEntityByIdentifier(nil).Return(scope)
+	scopeRep.EXPECT().GetScopeEntityByIdentifier(ctx,nil).Return(scope)
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     mocks.NewMockAuthCodeRepositoryInterface(mockCtl),
@@ -206,15 +212,16 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestInvalidCodeChallengeMethod(t 
 }
 
 func TestAuthCodeGrant_ValidateAuthorizationRequestCodeChallengeInvalidCharacters(t *testing.T) {
+	ctx := context.Background()
 	client := &oauth2.ClientEntity{
 		RedirectUri: []string{"http://foo/bar"},
 	}
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
 	scope := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
-	scopeRep.EXPECT().GetScopeEntityByIdentifier(nil).Return(scope)
+	scopeRep.EXPECT().GetScopeEntityByIdentifier(ctx,nil).Return(scope)
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     mocks.NewMockAuthCodeRepositoryInterface(mockCtl),
@@ -241,9 +248,10 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestCodeChallengeInvalidCharacter
 }
 
 func TestAuthCodeGrant_ValidateAuthorizationRequestInvalidClientId(t *testing.T) {
+	ctx := context.Background()
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     mocks.NewMockAuthCodeRepositoryInterface(mockCtl),
@@ -255,6 +263,8 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestInvalidClientId(t *testing.T)
 		ResponseType: "code",
 		ClientId:     "foo",
 	}
+	rq.SetContext(ctx)
+
 	ar, err := grant.ValidateAuthorizationRequest(rq)
 	if err != nil || ar != nil {
 		if err != errors.ErrInvalidClient {
@@ -264,15 +274,16 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestInvalidClientId(t *testing.T)
 }
 
 func TestAuthCodeGrant_ValidateAuthorizationRequestBadRedirectUriArray(t *testing.T) {
+	ctx := context.Background()
 	client := &oauth2.ClientEntity{
 		RedirectUri: []string{"http://foo/bar"},
 	}
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
 	scope := &Scope{}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
-	scopeRep.EXPECT().GetScopeEntityByIdentifier(nil).Return(scope)
+	scopeRep.EXPECT().GetScopeEntityByIdentifier(ctx,nil).Return(scope)
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     mocks.NewMockAuthCodeRepositoryInterface(mockCtl),
@@ -297,17 +308,20 @@ func TestAuthCodeGrant_ValidateAuthorizationRequestBadRedirectUriArray(t *testin
 }
 
 func TestAuthCodeGrant_CompleteAuthorizationRequest(t *testing.T) {
+	ctx := context.Background()
 	authReqest := &oauth2.AuthorizationRequest{
 		Client:    new(oauth2.ClientEntity),
 		GrantType: oauth2.AuthCodeGrantType,
 		User:      new(User),
 		IsAuthorizationApproved: true,
 	}
+	authReqest.SetContext(ctx)
+
 	mockCtl := gomock.NewController(t)
 	authcodeRep := mocks.NewMockAuthCodeRepositoryInterface(mockCtl)
 	authcode := new(AuthCode)
-	authcodeRep.EXPECT().GetNewAuthCode().Return(authcode)
-	authcodeRep.EXPECT().PersistNewAuthCode(gomock.Any()).Return(true)
+	authcodeRep.EXPECT().GetNewAuthCode(gomock.Any()).Return(authcode)
+	authcodeRep.EXPECT().PersistNewAuthCode(gomock.Any(),gomock.Any()).Return(true)
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     authcodeRep,
 		RefreshTokenRepository: mocks.NewMockRefreshTokenRepositoryInterface(mockCtl),
@@ -321,30 +335,35 @@ func TestAuthCodeGrant_CompleteAuthorizationRequest(t *testing.T) {
 }
 
 func mockAccessTokenGrant(t *testing.T) *oauth2.AuthCodeGrant {
+	//ctx := context.Background()
 	client := &oauth2.ClientEntity{
 		RedirectUri: []string{"http://foo/bar"},
 	}
 	client.SetIdentifier("foo")
 	mockCtl := gomock.NewController(t)
 	clientRep := mocks.NewMockClientRepositoryInterface(mockCtl)
-	clientRep.EXPECT().GetClientEntity(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
+	clientRep.EXPECT().GetClientEntity(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(client)
 
-	scopeEntity := &Scope{}
+	scopeEntity := &Scope{
+		Entity:oauth2.Entity{
+			Identifier:"1",
+		},
+	}
 	scopeRep := mocks.NewMockScopeRepositoryInterface(mockCtl)
-	scopeRep.EXPECT().GetScopeEntityByIdentifier(gomock.Any()).Return(scopeEntity)
-	scopeRep.EXPECT().FinalizeScopes(gomock.Any(), gomock.Any(), client).Return([]oauth2.ScopeEntityInterface{scopeEntity})
+	scopeRep.EXPECT().GetScopeEntityByIdentifier(gomock.Any(),gomock.Any()).Return(scopeEntity)
+	scopeRep.EXPECT().FinalizeScopes(gomock.Any(),gomock.Any(), gomock.Any(), client).Return([]oauth2.ScopeEntityInterface{scopeEntity})
 
 	accessRep := mocks.NewMockAccessTokenRepositoryInterface(mockCtl)
-	accessRep.EXPECT().GetNewToken(gomock.Any(), gomock.Any(), gomock.Any()).Return(new(AccessToken))
-	accessRep.EXPECT().PersistNewAccessToken(gomock.Any()).Return(true)
+	accessRep.EXPECT().GetNewToken(gomock.Any(),gomock.Any(), gomock.Any(), gomock.Any()).Return(new(AccessToken))
+	accessRep.EXPECT().PersistNewAccessToken(gomock.Any(),gomock.Any()).Return(true)
 
 	refreshRep := mocks.NewMockRefreshTokenRepositoryInterface(mockCtl)
-	refreshRep.EXPECT().PersistNewRefreshToken(gomock.Any()).Return(true)
-	refreshRep.EXPECT().GetNewRefreshToken().Return(new(oauth2.RefreshTokenEntity))
+	refreshRep.EXPECT().PersistNewRefreshToken(gomock.Any(),gomock.Any()).Return(true)
+	refreshRep.EXPECT().GetNewRefreshToken(gomock.Any()).Return(new(oauth2.RefreshTokenEntity))
 
 	authcodeRep := mocks.NewMockAuthCodeRepositoryInterface(mockCtl)
-	authcodeRep.EXPECT().IsAuthCodeRevoked(gomock.Any()).Return(false)
-	authcodeRep.EXPECT().RevokeAuthCode(gomock.Any())
+	authcodeRep.EXPECT().IsAuthCodeRevoked(gomock.Any(),gomock.Any()).Return(false)
+	authcodeRep.EXPECT().RevokeAuthCode(gomock.Any(),gomock.Any())
 
 	grant := &oauth2.AuthCodeGrant{
 		AuthCodeRepository:     authcodeRep,

@@ -1,6 +1,9 @@
 package models
 
-import "github.com/tsingsun/go-oauth2"
+import (
+	"context"
+	"github.com/tsingsun/go-oauth2"
+)
 
 type Client struct {
 	oauth2.Entity
@@ -12,7 +15,7 @@ type ClientRepository struct {
 	Db string
 }
 
-func (c *ClientRepository) GetClientEntity(clientIdentifier string, grantType oauth2.GrantType, clientSecret string, mustValidateSecret bool) oauth2.ClientEntityInterface {
+func (c *ClientRepository) GetClientEntity(ctx context.Context,clientIdentifier string, grantType oauth2.GrantType, clientSecret string, mustValidateSecret bool) oauth2.ClientEntityInterface {
 	cl := &Client{
 		Entity: oauth2.Entity{
 			Identifier: "client01",

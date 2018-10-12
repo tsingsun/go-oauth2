@@ -11,6 +11,14 @@ type Option func(*Options)
 
 type GetUser func(userId string) (UserEntityInterface, error)
 
+/*
+	http.HandleFunc("/oauth2/v1/token", func(writer http.ResponseWriter, request *http.Request) {
+		svr.HandleTokenRequest(writer, request)
+	})
+	http.HandleFunc("/oauth2/v1/authorize", func(writer http.ResponseWriter, request *http.Request) {
+		svr.HandleAuthorizeRequest(writer, request)
+	})
+ */
 type Service struct {
 	opts       *Options
 	GrantTypes map[GrantType]GrantTypeInterface
@@ -19,16 +27,9 @@ type Service struct {
 
 func NewService(opts ...Option) *Service {
 	options := NewOptions(opts...)
-	checkOptions(options)
 	return &Service{
 		opts:       options,
 		GrantTypes: make(map[GrantType]GrantTypeInterface),
-	}
-}
-
-func checkOptions(opts *Options) {
-	if opts.PrivateKey == nil {
-		panic("please set the private key!")
 	}
 }
 
@@ -47,7 +48,7 @@ func (s *Service) ClientRepository() ClientRepositoryInterface {
 func (s *Service) AccessTokenRepository() AccessTokenRepositoryInterface {
 	return s.opts.AccessTokenRepository
 }
-
+// http handle function for token request
 func (s *Service) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
 	tq := TokenRequestFromHttp(r)
 	ret, err := s.HandleAccessTokenRequestInternal(tq)
@@ -62,12 +63,12 @@ func (s *Service) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ret)
 	return
 }
-
+// http handle function for authorize request
 func (s *Service) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request) {
-	ar, err := s.ValidateAuthorizationRequest(w, r)
+	tq := AuthorizeRequestFromHttp(r)
+	ar, err := s.ValidateAuthorizationRequest(tq)
 	if err != nil {
 		errorResponse(err, w, r)
-		//http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if s.GetUser != nil {
@@ -107,16 +108,15 @@ func (s *Service) HandleAccessTokenRequestInternal(req *RequestWapper) (*AccessT
 	}
 }
 
-func (s *Service) ValidateAuthorizationRequest(w http.ResponseWriter, r *http.Request) (ar *AuthorizationRequest, err error) {
-	tq := AuthorizeRequestFromHttp(r)
-	handle, ok := s.GrantTypes[tq.GrantType]
+func (s *Service) ValidateAuthorizationRequest(req *RequestWapper) (ar *AuthorizationRequest, err error) {
+	handle, ok := s.GrantTypes[req.GrantType]
 	if !ok {
 		return nil, errors.ErrInvalidGrant
 	}
-	if err = handle.CanRespondToAuthorizationRequest(tq); err != nil {
+	if err = handle.CanRespondToAuthorizationRequest(req); err != nil {
 		return
 	}
-	ar, err = handle.ValidateAuthorizationRequest(tq)
+	ar, err = handle.ValidateAuthorizationRequest(req)
 	if err != nil {
 		return
 	}

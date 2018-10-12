@@ -1,6 +1,7 @@
 package oauth2_test
 
 import (
+	"context"
 	"github.com/tsingsun/go-oauth2"
 	"io/ioutil"
 	"time"
@@ -12,7 +13,7 @@ var (
 
 const (
 	ENCRYPTION_KEY = "cxPrjjamV6wI82ka"
-	PRIVATE_KEY    = "./example/rsa_auth_pkcs8.pem"
+	PRIVATE_KEY    = "./_example/rsa_auth_pkcs8.pem"
 )
 
 type Client struct {
@@ -24,7 +25,7 @@ type ClientRepository struct {
 	Db string
 }
 
-func (c *ClientRepository) GetClientEntity(clientIdentifier string, grantType oauth2.GrantType, clientSecret string, mustValidateSecret bool) oauth2.ClientEntityInterface {
+func (c *ClientRepository) GetClientEntity(ctx context.Context,clientIdentifier string, grantType oauth2.GrantType, clientSecret string, mustValidateSecret bool) oauth2.ClientEntityInterface {
 	cl := &Client{
 		ClientEntity: oauth2.ClientEntity{
 			Entity: oauth2.Entity{
@@ -45,7 +46,7 @@ type AccessTokenRepository struct {
 	oauth2.AccessTokenRepositoryInterface
 }
 
-func (a *AccessTokenRepository) GetNewToken(ce oauth2.ClientEntityInterface, scopes []oauth2.ScopeEntityInterface, userIdentifier string) oauth2.AccessTokenEntityInterface {
+func (a *AccessTokenRepository) GetNewToken(ctx context.Context,ce oauth2.ClientEntityInterface, scopes []oauth2.ScopeEntityInterface, userIdentifier string) oauth2.AccessTokenEntityInterface {
 	at := &AccessToken{}
 	at.SetClient(ce)
 	for _, v := range scopes {
@@ -54,39 +55,34 @@ func (a *AccessTokenRepository) GetNewToken(ce oauth2.ClientEntityInterface, sco
 	return at
 }
 
-func (a *AccessTokenRepository) PersistNewAccessToken(accessTokenEntity oauth2.AccessTokenEntityInterface) bool {
+func (a *AccessTokenRepository) PersistNewAccessToken(ctx context.Context,accessTokenEntity oauth2.AccessTokenEntityInterface) bool {
 	return true
 }
 
-func (a *AccessTokenRepository) RevokeAccessToken(tokenId string) {
+func (a *AccessTokenRepository) RevokeAccessToken(ctx context.Context,tokenId string) {
 
 }
 
-func (a *AccessTokenRepository) IsAccessTokenRevoked(tokenId string) bool {
+func (a *AccessTokenRepository) IsAccessTokenRevoked(ctx context.Context,tokenId string) bool {
 	return true
 }
 
 type Scope struct {
 	oauth2.Entity
-	oauth2.ScopeEntityInterface
 }
 
 type ScopeRepository struct {
 	oauth2.ScopeRepositoryInterface
 }
 
-func (s *Scope) getIdentifier() string {
-	return s.Identifier
-}
-
-func (s *ScopeRepository) GetScopeEntityByIdentifier(identifier string) oauth2.ScopeEntityInterface {
+func (s *ScopeRepository) GetScopeEntityByIdentifier(ctx context.Context,identifier string) oauth2.ScopeEntityInterface {
 	sps := make(map[string]string)
 	sps["basic"] = "basic info"
 	sps["social"] = "get info"
 	return &Scope{}
 }
 
-func (s *ScopeRepository) FinalizeScopes(scopes []oauth2.ScopeEntityInterface, grantType oauth2.GrantType, clientEntity oauth2.ClientEntityInterface) []oauth2.ScopeEntityInterface {
+func (s *ScopeRepository) FinalizeScopes(ctx context.Context,scopes []oauth2.ScopeEntityInterface, grantType oauth2.GrantType, clientEntity oauth2.ClientEntityInterface) []oauth2.ScopeEntityInterface {
 	return []oauth2.ScopeEntityInterface{&Scope{}}
 }
 
@@ -98,22 +94,22 @@ type RefreshTokenRepository struct {
 	oauth2.RefreshTokenRepositoryInterface
 }
 
-func (t *RefreshTokenRepository) GetNewRefreshToken() oauth2.RefreshTokenEntityInterface {
+func (t *RefreshTokenRepository) GetNewRefreshToken(ctx context.Context) oauth2.RefreshTokenEntityInterface {
 	return &RefreshToken{}
 }
 
 // Create a new refresh token_name.
-func (t *RefreshTokenRepository) PersistNewRefreshToken(refreshTokenEntity oauth2.RefreshTokenEntityInterface) bool {
+func (t *RefreshTokenRepository) PersistNewRefreshToken(ctx context.Context,refreshTokenEntity oauth2.RefreshTokenEntityInterface) bool {
 	return true
 }
 
 // Revoke the refresh token.
-func (t *RefreshTokenRepository) RevokeRefreshToken(tokenId string) {
+func (t *RefreshTokenRepository) RevokeRefreshToken(ctx context.Context,tokenId string) {
 
 }
 
 // Check if the refresh token has been revoked.
-func (t *RefreshTokenRepository) IsRefreshTokenRevoked(tokenId string) bool {
+func (t *RefreshTokenRepository) IsRefreshTokenRevoked(ctx context.Context,tokenId string) bool {
 	return true
 }
 
@@ -127,7 +123,7 @@ func (u *User) GetIdentifier() string {
 	return "0001"
 }
 
-func (u *User) GetUserEntityByUserCredentials(username string, password string, grantType string, clientEntity oauth2.ClientEntityInterface) oauth2.UserEntityInterface {
+func (u *User) GetUserEntityByUserCredentials(ctx context.Context,username string, password string, grantType string, clientEntity oauth2.ClientEntityInterface) oauth2.UserEntityInterface {
 	return new(User)
 }
 
@@ -138,12 +134,12 @@ type AuthCode struct {
 func init() {
 	c,_ := ioutil.ReadFile(PRIVATE_KEY)
 	defaultService = oauth2.NewService(
-		oauth2.SetClientRepository(&ClientRepository{}),
-		oauth2.SetAccessTokenRepository(&AccessTokenRepository{}),
-		oauth2.SetResponseType(&oauth2.BearerTokenResponse{}),
-		oauth2.SetScopeRepository(&ScopeRepository{}),
-		oauth2.SetEncryptionKey("abcd"),
-		oauth2.SetPrivateKey(c),
+		oauth2.WithClientRepository(&ClientRepository{}),
+		oauth2.WithAccessTokenRepository(&AccessTokenRepository{}),
+		oauth2.WithResponseType(&oauth2.BearerTokenResponse{}),
+		oauth2.WithScopeRepository(&ScopeRepository{}),
+		oauth2.WithEncryptionKey("abcdefgh"),
+		oauth2.WithPrivateKey(c),
 	)
 	accessTokenTTL := 7200 * time.Second
 	grant1 := oauth2.NewClientCredentialsGrant(defaultService.Options())

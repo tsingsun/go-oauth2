@@ -14,7 +14,7 @@ func (t *TokenEntity) AddScope(s ScopeEntityInterface) {
 	if t.scopes == nil {
 		t.scopes = make(map[string]ScopeEntityInterface)
 	}
-	t.scopes[s.getIdentifier()] = s
+	t.scopes[s.GetIdentifier()] = s
 }
 
 func (t *TokenEntity) GetScopes() []ScopeEntityInterface {

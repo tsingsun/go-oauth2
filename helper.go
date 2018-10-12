@@ -7,7 +7,7 @@ import (
 func ConvertScopes2String(scopes []ScopeEntityInterface) string {
 	var vals []string
 	for _, v := range scopes {
-		vals = append(vals, v.getIdentifier())
+		vals = append(vals, v.GetIdentifier())
 	}
 	return strings.Join(vals, ",")
 }

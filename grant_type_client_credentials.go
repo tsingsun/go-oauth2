@@ -44,16 +44,16 @@ func (c *ClientCredentialsGrant) CanRespondToAccessTokenRequest(request *Request
 	return nil
 }
 
-func (c *ClientCredentialsGrant) RespondToAccessTokenRequest(req *RequestWapper, res ResponseTypeInterface) error {
-	client, err := c.validateClient(req)
+func (c *ClientCredentialsGrant) RespondToAccessTokenRequest(rw *RequestWapper, res ResponseTypeInterface) error {
+	client, err := c.validateClient(rw)
 	if err != nil {
 		return err
 	}
-	scopes, _ := c.validateScopes(req.Scope)
+	scopes, _ := c.validateScopes(rw.ctx,rw.Scope)
 
 	// Finalize the requested scopes
-	finalizedScopes := c.scopeRepository.FinalizeScopes(scopes, c.GetIdentifier(), client)
-	accessToken, err := c.issueAccessToken(c.AccessTokenTTL, client, finalizedScopes)
+	finalizedScopes := c.scopeRepository.FinalizeScopes(rw.ctx,scopes, c.GetIdentifier(), client)
+	accessToken, err := c.issueAccessToken(rw.ctx,c.AccessTokenTTL, client, finalizedScopes)
 	if err != nil {
 		return err
 	}

@@ -1,5 +1,8 @@
 package oauth2
 
+import "context"
+
+// authorization request struct
 type AuthorizationRequest struct {
 	// The grant type identifier
 	GrantType GrantType
@@ -19,4 +22,10 @@ type AuthorizationRequest struct {
 	CodeChallenge string
 	// The code challenge method (if provided)
 	CodeChallengeMethod string
+	// the request's context
+	ctx context.Context
+}
+
+func (t AuthorizationRequest) SetContext(ctx context.Context)  {
+	t.ctx = ctx
 }

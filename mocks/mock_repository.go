@@ -5,6 +5,7 @@
 package mock_oauth2
 
 import (
+	context "context"
 	gomock "github.com/golang/mock/gomock"
 	go_oauth2 "github.com/tsingsun/go-oauth2"
 	reflect "reflect"
@@ -34,49 +35,49 @@ func (m *MockAccessTokenRepositoryInterface) EXPECT() *MockAccessTokenRepository
 }
 
 // GetNewToken mocks base method
-func (m *MockAccessTokenRepositoryInterface) GetNewToken(ce go_oauth2.ClientEntityInterface, scopes []go_oauth2.ScopeEntityInterface, userIdentifier string) go_oauth2.AccessTokenEntityInterface {
-	ret := m.ctrl.Call(m, "GetNewToken", ce, scopes, userIdentifier)
+func (m *MockAccessTokenRepositoryInterface) GetNewToken(ctx context.Context, ce go_oauth2.ClientEntityInterface, scopes []go_oauth2.ScopeEntityInterface, userIdentifier string) go_oauth2.AccessTokenEntityInterface {
+	ret := m.ctrl.Call(m, "GetNewToken", ctx, ce, scopes, userIdentifier)
 	ret0, _ := ret[0].(go_oauth2.AccessTokenEntityInterface)
 	return ret0
 }
 
 // GetNewToken indicates an expected call of GetNewToken
-func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) GetNewToken(ce, scopes, userIdentifier interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewToken", reflect.TypeOf((*MockAccessTokenRepositoryInterface)(nil).GetNewToken), ce, scopes, userIdentifier)
+func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) GetNewToken(ctx, ce, scopes, userIdentifier interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewToken", reflect.TypeOf((*MockAccessTokenRepositoryInterface)(nil).GetNewToken), ctx, ce, scopes, userIdentifier)
 }
 
 // PersistNewAccessToken mocks base method
-func (m *MockAccessTokenRepositoryInterface) PersistNewAccessToken(accessTokenEntity go_oauth2.AccessTokenEntityInterface) bool {
-	ret := m.ctrl.Call(m, "PersistNewAccessToken", accessTokenEntity)
+func (m *MockAccessTokenRepositoryInterface) PersistNewAccessToken(ctx context.Context, accessTokenEntity go_oauth2.AccessTokenEntityInterface) bool {
+	ret := m.ctrl.Call(m, "PersistNewAccessToken", ctx, accessTokenEntity)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // PersistNewAccessToken indicates an expected call of PersistNewAccessToken
-func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) PersistNewAccessToken(accessTokenEntity interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PersistNewAccessToken", reflect.TypeOf((*MockAccessTokenRepositoryInterface)(nil).PersistNewAccessToken), accessTokenEntity)
+func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) PersistNewAccessToken(ctx, accessTokenEntity interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PersistNewAccessToken", reflect.TypeOf((*MockAccessTokenRepositoryInterface)(nil).PersistNewAccessToken), ctx, accessTokenEntity)
 }
 
 // RevokeAccessToken mocks base method
-func (m *MockAccessTokenRepositoryInterface) RevokeAccessToken(tokenId string) {
-	m.ctrl.Call(m, "RevokeAccessToken", tokenId)
+func (m *MockAccessTokenRepositoryInterface) RevokeAccessToken(ctx context.Context, tokenId string) {
+	m.ctrl.Call(m, "RevokeAccessToken", ctx, tokenId)
 }
 
 // RevokeAccessToken indicates an expected call of RevokeAccessToken
-func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) RevokeAccessToken(tokenId interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAccessToken", reflect.TypeOf((*MockAccessTokenRepositoryInterface)(nil).RevokeAccessToken), tokenId)
+func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) RevokeAccessToken(ctx, tokenId interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAccessToken", reflect.TypeOf((*MockAccessTokenRepositoryInterface)(nil).RevokeAccessToken), ctx, tokenId)
 }
 
 // IsAccessTokenRevoked mocks base method
-func (m *MockAccessTokenRepositoryInterface) IsAccessTokenRevoked(tokenId string) bool {
-	ret := m.ctrl.Call(m, "IsAccessTokenRevoked", tokenId)
+func (m *MockAccessTokenRepositoryInterface) IsAccessTokenRevoked(ctx context.Context, tokenId string) bool {
+	ret := m.ctrl.Call(m, "IsAccessTokenRevoked", ctx, tokenId)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // IsAccessTokenRevoked indicates an expected call of IsAccessTokenRevoked
-func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) IsAccessTokenRevoked(tokenId interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAccessTokenRevoked", reflect.TypeOf((*MockAccessTokenRepositoryInterface)(nil).IsAccessTokenRevoked), tokenId)
+func (mr *MockAccessTokenRepositoryInterfaceMockRecorder) IsAccessTokenRevoked(ctx, tokenId interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAccessTokenRevoked", reflect.TypeOf((*MockAccessTokenRepositoryInterface)(nil).IsAccessTokenRevoked), ctx, tokenId)
 }
 
 // MockAuthCodeRepositoryInterface is a mock of AuthCodeRepositoryInterface interface
@@ -103,49 +104,49 @@ func (m *MockAuthCodeRepositoryInterface) EXPECT() *MockAuthCodeRepositoryInterf
 }
 
 // GetNewAuthCode mocks base method
-func (m *MockAuthCodeRepositoryInterface) GetNewAuthCode() go_oauth2.AuthCodeEntityInterface {
-	ret := m.ctrl.Call(m, "GetNewAuthCode")
+func (m *MockAuthCodeRepositoryInterface) GetNewAuthCode(ctx context.Context) go_oauth2.AuthCodeEntityInterface {
+	ret := m.ctrl.Call(m, "GetNewAuthCode", ctx)
 	ret0, _ := ret[0].(go_oauth2.AuthCodeEntityInterface)
 	return ret0
 }
 
 // GetNewAuthCode indicates an expected call of GetNewAuthCode
-func (mr *MockAuthCodeRepositoryInterfaceMockRecorder) GetNewAuthCode() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewAuthCode", reflect.TypeOf((*MockAuthCodeRepositoryInterface)(nil).GetNewAuthCode))
+func (mr *MockAuthCodeRepositoryInterfaceMockRecorder) GetNewAuthCode(ctx interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewAuthCode", reflect.TypeOf((*MockAuthCodeRepositoryInterface)(nil).GetNewAuthCode), ctx)
 }
 
 // PersistNewAuthCode mocks base method
-func (m *MockAuthCodeRepositoryInterface) PersistNewAuthCode(authCodeEntity go_oauth2.AuthCodeEntityInterface) bool {
-	ret := m.ctrl.Call(m, "PersistNewAuthCode", authCodeEntity)
+func (m *MockAuthCodeRepositoryInterface) PersistNewAuthCode(ctx context.Context, authCodeEntity go_oauth2.AuthCodeEntityInterface) bool {
+	ret := m.ctrl.Call(m, "PersistNewAuthCode", ctx, authCodeEntity)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // PersistNewAuthCode indicates an expected call of PersistNewAuthCode
-func (mr *MockAuthCodeRepositoryInterfaceMockRecorder) PersistNewAuthCode(authCodeEntity interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PersistNewAuthCode", reflect.TypeOf((*MockAuthCodeRepositoryInterface)(nil).PersistNewAuthCode), authCodeEntity)
+func (mr *MockAuthCodeRepositoryInterfaceMockRecorder) PersistNewAuthCode(ctx, authCodeEntity interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PersistNewAuthCode", reflect.TypeOf((*MockAuthCodeRepositoryInterface)(nil).PersistNewAuthCode), ctx, authCodeEntity)
 }
 
 // RevokeAuthCode mocks base method
-func (m *MockAuthCodeRepositoryInterface) RevokeAuthCode(code string) {
-	m.ctrl.Call(m, "RevokeAuthCode", code)
+func (m *MockAuthCodeRepositoryInterface) RevokeAuthCode(ctx context.Context, code string) {
+	m.ctrl.Call(m, "RevokeAuthCode", ctx, code)
 }
 
 // RevokeAuthCode indicates an expected call of RevokeAuthCode
-func (mr *MockAuthCodeRepositoryInterfaceMockRecorder) RevokeAuthCode(code interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeRepositoryInterface)(nil).RevokeAuthCode), code)
+func (mr *MockAuthCodeRepositoryInterfaceMockRecorder) RevokeAuthCode(ctx, code interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeRepositoryInterface)(nil).RevokeAuthCode), ctx, code)
 }
 
 // IsAuthCodeRevoked mocks base method
-func (m *MockAuthCodeRepositoryInterface) IsAuthCodeRevoked(code string) bool {
-	ret := m.ctrl.Call(m, "IsAuthCodeRevoked", code)
+func (m *MockAuthCodeRepositoryInterface) IsAuthCodeRevoked(ctx context.Context, code string) bool {
+	ret := m.ctrl.Call(m, "IsAuthCodeRevoked", ctx, code)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // IsAuthCodeRevoked indicates an expected call of IsAuthCodeRevoked
-func (mr *MockAuthCodeRepositoryInterfaceMockRecorder) IsAuthCodeRevoked(code interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAuthCodeRevoked", reflect.TypeOf((*MockAuthCodeRepositoryInterface)(nil).IsAuthCodeRevoked), code)
+func (mr *MockAuthCodeRepositoryInterfaceMockRecorder) IsAuthCodeRevoked(ctx, code interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAuthCodeRevoked", reflect.TypeOf((*MockAuthCodeRepositoryInterface)(nil).IsAuthCodeRevoked), ctx, code)
 }
 
 // MockClientRepositoryInterface is a mock of ClientRepositoryInterface interface
@@ -172,15 +173,15 @@ func (m *MockClientRepositoryInterface) EXPECT() *MockClientRepositoryInterfaceM
 }
 
 // GetClientEntity mocks base method
-func (m *MockClientRepositoryInterface) GetClientEntity(clientIdentifier string, grantType go_oauth2.GrantType, clientSecret string, mustValidateSecret bool) go_oauth2.ClientEntityInterface {
-	ret := m.ctrl.Call(m, "GetClientEntity", clientIdentifier, grantType, clientSecret, mustValidateSecret)
+func (m *MockClientRepositoryInterface) GetClientEntity(ctx context.Context, clientIdentifier string, grantType go_oauth2.GrantType, clientSecret string, mustValidateSecret bool) go_oauth2.ClientEntityInterface {
+	ret := m.ctrl.Call(m, "GetClientEntity", ctx, clientIdentifier, grantType, clientSecret, mustValidateSecret)
 	ret0, _ := ret[0].(go_oauth2.ClientEntityInterface)
 	return ret0
 }
 
 // GetClientEntity indicates an expected call of GetClientEntity
-func (mr *MockClientRepositoryInterfaceMockRecorder) GetClientEntity(clientIdentifier, grantType, clientSecret, mustValidateSecret interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetClientEntity", reflect.TypeOf((*MockClientRepositoryInterface)(nil).GetClientEntity), clientIdentifier, grantType, clientSecret, mustValidateSecret)
+func (mr *MockClientRepositoryInterfaceMockRecorder) GetClientEntity(ctx, clientIdentifier, grantType, clientSecret, mustValidateSecret interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetClientEntity", reflect.TypeOf((*MockClientRepositoryInterface)(nil).GetClientEntity), ctx, clientIdentifier, grantType, clientSecret, mustValidateSecret)
 }
 
 // MockRefreshTokenRepositoryInterface is a mock of RefreshTokenRepositoryInterface interface
@@ -207,49 +208,49 @@ func (m *MockRefreshTokenRepositoryInterface) EXPECT() *MockRefreshTokenReposito
 }
 
 // GetNewRefreshToken mocks base method
-func (m *MockRefreshTokenRepositoryInterface) GetNewRefreshToken() go_oauth2.RefreshTokenEntityInterface {
-	ret := m.ctrl.Call(m, "GetNewRefreshToken")
+func (m *MockRefreshTokenRepositoryInterface) GetNewRefreshToken(ctx context.Context) go_oauth2.RefreshTokenEntityInterface {
+	ret := m.ctrl.Call(m, "GetNewRefreshToken", ctx)
 	ret0, _ := ret[0].(go_oauth2.RefreshTokenEntityInterface)
 	return ret0
 }
 
 // GetNewRefreshToken indicates an expected call of GetNewRefreshToken
-func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) GetNewRefreshToken() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewRefreshToken", reflect.TypeOf((*MockRefreshTokenRepositoryInterface)(nil).GetNewRefreshToken))
+func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) GetNewRefreshToken(ctx interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewRefreshToken", reflect.TypeOf((*MockRefreshTokenRepositoryInterface)(nil).GetNewRefreshToken), ctx)
 }
 
 // PersistNewRefreshToken mocks base method
-func (m *MockRefreshTokenRepositoryInterface) PersistNewRefreshToken(refreshTokenEntity go_oauth2.RefreshTokenEntityInterface) bool {
-	ret := m.ctrl.Call(m, "PersistNewRefreshToken", refreshTokenEntity)
+func (m *MockRefreshTokenRepositoryInterface) PersistNewRefreshToken(ctx context.Context, refreshTokenEntity go_oauth2.RefreshTokenEntityInterface) bool {
+	ret := m.ctrl.Call(m, "PersistNewRefreshToken", ctx, refreshTokenEntity)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // PersistNewRefreshToken indicates an expected call of PersistNewRefreshToken
-func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) PersistNewRefreshToken(refreshTokenEntity interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PersistNewRefreshToken", reflect.TypeOf((*MockRefreshTokenRepositoryInterface)(nil).PersistNewRefreshToken), refreshTokenEntity)
+func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) PersistNewRefreshToken(ctx, refreshTokenEntity interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PersistNewRefreshToken", reflect.TypeOf((*MockRefreshTokenRepositoryInterface)(nil).PersistNewRefreshToken), ctx, refreshTokenEntity)
 }
 
 // RevokeRefreshToken mocks base method
-func (m *MockRefreshTokenRepositoryInterface) RevokeRefreshToken(tokenId string) {
-	m.ctrl.Call(m, "RevokeRefreshToken", tokenId)
+func (m *MockRefreshTokenRepositoryInterface) RevokeRefreshToken(ctx context.Context, tokenId string) {
+	m.ctrl.Call(m, "RevokeRefreshToken", ctx, tokenId)
 }
 
 // RevokeRefreshToken indicates an expected call of RevokeRefreshToken
-func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) RevokeRefreshToken(tokenId interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeRefreshToken", reflect.TypeOf((*MockRefreshTokenRepositoryInterface)(nil).RevokeRefreshToken), tokenId)
+func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) RevokeRefreshToken(ctx, tokenId interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeRefreshToken", reflect.TypeOf((*MockRefreshTokenRepositoryInterface)(nil).RevokeRefreshToken), ctx, tokenId)
 }
 
 // IsRefreshTokenRevoked mocks base method
-func (m *MockRefreshTokenRepositoryInterface) IsRefreshTokenRevoked(tokenId string) bool {
-	ret := m.ctrl.Call(m, "IsRefreshTokenRevoked", tokenId)
+func (m *MockRefreshTokenRepositoryInterface) IsRefreshTokenRevoked(ctx context.Context, tokenId string) bool {
+	ret := m.ctrl.Call(m, "IsRefreshTokenRevoked", ctx, tokenId)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // IsRefreshTokenRevoked indicates an expected call of IsRefreshTokenRevoked
-func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) IsRefreshTokenRevoked(tokenId interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsRefreshTokenRevoked", reflect.TypeOf((*MockRefreshTokenRepositoryInterface)(nil).IsRefreshTokenRevoked), tokenId)
+func (mr *MockRefreshTokenRepositoryInterfaceMockRecorder) IsRefreshTokenRevoked(ctx, tokenId interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsRefreshTokenRevoked", reflect.TypeOf((*MockRefreshTokenRepositoryInterface)(nil).IsRefreshTokenRevoked), ctx, tokenId)
 }
 
 // MockScopeRepositoryInterface is a mock of ScopeRepositoryInterface interface
@@ -276,27 +277,27 @@ func (m *MockScopeRepositoryInterface) EXPECT() *MockScopeRepositoryInterfaceMoc
 }
 
 // GetScopeEntityByIdentifier mocks base method
-func (m *MockScopeRepositoryInterface) GetScopeEntityByIdentifier(identifier string) go_oauth2.ScopeEntityInterface {
-	ret := m.ctrl.Call(m, "GetScopeEntityByIdentifier", identifier)
+func (m *MockScopeRepositoryInterface) GetScopeEntityByIdentifier(ctx context.Context, identifier string) go_oauth2.ScopeEntityInterface {
+	ret := m.ctrl.Call(m, "GetScopeEntityByIdentifier", ctx, identifier)
 	ret0, _ := ret[0].(go_oauth2.ScopeEntityInterface)
 	return ret0
 }
 
 // GetScopeEntityByIdentifier indicates an expected call of GetScopeEntityByIdentifier
-func (mr *MockScopeRepositoryInterfaceMockRecorder) GetScopeEntityByIdentifier(identifier interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetScopeEntityByIdentifier", reflect.TypeOf((*MockScopeRepositoryInterface)(nil).GetScopeEntityByIdentifier), identifier)
+func (mr *MockScopeRepositoryInterfaceMockRecorder) GetScopeEntityByIdentifier(ctx, identifier interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetScopeEntityByIdentifier", reflect.TypeOf((*MockScopeRepositoryInterface)(nil).GetScopeEntityByIdentifier), ctx, identifier)
 }
 
 // FinalizeScopes mocks base method
-func (m *MockScopeRepositoryInterface) FinalizeScopes(scopes []go_oauth2.ScopeEntityInterface, grantType go_oauth2.GrantType, clientEntity go_oauth2.ClientEntityInterface) []go_oauth2.ScopeEntityInterface {
-	ret := m.ctrl.Call(m, "FinalizeScopes", scopes, grantType, clientEntity)
+func (m *MockScopeRepositoryInterface) FinalizeScopes(ctx context.Context, scopes []go_oauth2.ScopeEntityInterface, grantType go_oauth2.GrantType, clientEntity go_oauth2.ClientEntityInterface) []go_oauth2.ScopeEntityInterface {
+	ret := m.ctrl.Call(m, "FinalizeScopes", ctx, scopes, grantType, clientEntity)
 	ret0, _ := ret[0].([]go_oauth2.ScopeEntityInterface)
 	return ret0
 }
 
 // FinalizeScopes indicates an expected call of FinalizeScopes
-func (mr *MockScopeRepositoryInterfaceMockRecorder) FinalizeScopes(scopes, grantType, clientEntity interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FinalizeScopes", reflect.TypeOf((*MockScopeRepositoryInterface)(nil).FinalizeScopes), scopes, grantType, clientEntity)
+func (mr *MockScopeRepositoryInterfaceMockRecorder) FinalizeScopes(ctx, scopes, grantType, clientEntity interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FinalizeScopes", reflect.TypeOf((*MockScopeRepositoryInterface)(nil).FinalizeScopes), ctx, scopes, grantType, clientEntity)
 }
 
 // MockUserRepositoryInterface is a mock of UserRepositoryInterface interface
@@ -323,13 +324,13 @@ func (m *MockUserRepositoryInterface) EXPECT() *MockUserRepositoryInterfaceMockR
 }
 
 // GetUserEntityByUserCredentials mocks base method
-func (m *MockUserRepositoryInterface) GetUserEntityByUserCredentials(username, password, grantType string, clientEntity go_oauth2.ClientEntityInterface) go_oauth2.UserEntityInterface {
-	ret := m.ctrl.Call(m, "GetUserEntityByUserCredentials", username, password, grantType, clientEntity)
+func (m *MockUserRepositoryInterface) GetUserEntityByUserCredentials(ctx context.Context, username, password, grantType string, clientEntity go_oauth2.ClientEntityInterface) go_oauth2.UserEntityInterface {
+	ret := m.ctrl.Call(m, "GetUserEntityByUserCredentials", ctx, username, password, grantType, clientEntity)
 	ret0, _ := ret[0].(go_oauth2.UserEntityInterface)
 	return ret0
 }
 
 // GetUserEntityByUserCredentials indicates an expected call of GetUserEntityByUserCredentials
-func (mr *MockUserRepositoryInterfaceMockRecorder) GetUserEntityByUserCredentials(username, password, grantType, clientEntity interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserEntityByUserCredentials", reflect.TypeOf((*MockUserRepositoryInterface)(nil).GetUserEntityByUserCredentials), username, password, grantType, clientEntity)
+func (mr *MockUserRepositoryInterfaceMockRecorder) GetUserEntityByUserCredentials(ctx, username, password, grantType, clientEntity interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserEntityByUserCredentials", reflect.TypeOf((*MockUserRepositoryInterface)(nil).GetUserEntityByUserCredentials), ctx, username, password, grantType, clientEntity)
 }

@@ -1,6 +1,7 @@
 package oauth2
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	oauthErrors "github.com/tsingsun/go-oauth2/errors"
@@ -72,16 +73,16 @@ func (t *RefreshTokenGrant) RespondToAccessTokenRequest(rw *RequestWapper, res R
 		reqScopes = payload.Scopes
 	}
 
-	scopes, err := t.validateScopes(reqScopes)
+	scopes, err := t.validateScopes(rw.ctx,reqScopes)
 	if err != nil {
 		return err
 	}
 
-	t.accessTokenRepository.RevokeAccessToken(payload.AccessTokenId)
-	t.RefreshTokenRepository.RevokeRefreshToken(payload.RefreshTokenId)
+	t.accessTokenRepository.RevokeAccessToken(rw.ctx,payload.AccessTokenId)
+	t.RefreshTokenRepository.RevokeRefreshToken(rw.ctx,payload.RefreshTokenId)
 
-	accessToken, err := t.issueAccessToken(t.AccessTokenTTL, client, scopes)
-	refreshToken, err := t.issueRefreshToken(accessToken)
+	accessToken, err := t.issueAccessToken(rw.ctx,t.AccessTokenTTL, client, scopes)
+	refreshToken, err := t.issueRefreshToken(rw.ctx,accessToken)
 	if err != nil {
 		return err
 	}
@@ -111,19 +112,19 @@ func (t *RefreshTokenGrant) validateOldRefreshToken(rw *RequestWapper, clientId 
 		// Authorization code was not issued to this client
 		return nil, oauthErrors.ErrInvalidAuthCode
 	}
-	if t.RefreshTokenRepository.IsRefreshTokenRevoked(payload.RefreshTokenId) {
+	if t.RefreshTokenRepository.IsRefreshTokenRevoked(rw.ctx,payload.RefreshTokenId) {
 		return nil, oauthErrors.ErrInvalidRefreshToken
 	}
 	return payload, nil
 }
 
-func (t *RefreshTokenGrant) issueRefreshToken(accessToken AccessTokenEntityInterface) (RefreshTokenEntityInterface, error) {
-	refreshToken := t.RefreshTokenRepository.GetNewRefreshToken()
+func (t *RefreshTokenGrant) issueRefreshToken(ctx context.Context,accessToken AccessTokenEntityInterface) (RefreshTokenEntityInterface, error) {
+	refreshToken := t.RefreshTokenRepository.GetNewRefreshToken(ctx)
 	refreshToken.SetExpiryDateTime(time.Now().Add(t.RefreshTokenTTL))
 	refreshToken.SetAccessToken(accessToken)
 	for maxGenerationAttempts := t.getMaxGenerationAttempts(); maxGenerationAttempts > 0; maxGenerationAttempts-- {
 		refreshToken.SetIdentifier(t.GenerateUniqueIdentifier(40))
-		if t.RefreshTokenRepository.PersistNewRefreshToken(refreshToken) {
+		if t.RefreshTokenRepository.PersistNewRefreshToken(ctx,refreshToken) {
 			return refreshToken, nil
 		}
 	}
@@ -134,7 +135,7 @@ func (t *RefreshTokenGrant) CanRespondToAuthorizationRequest(request *RequestWap
 	return oauthErrors.ErrInvalidGrant
 }
 
-func (t *RefreshTokenGrant) CompleteAuthorizationRequest(authorizationRequest *AuthorizationRequest) (*RedirectTypeResponse, error) {
+func (t *RefreshTokenGrant) CompleteAuthorizationRequest(ar *AuthorizationRequest) (*RedirectTypeResponse, error) {
 	return nil, oauthErrors.ErrInvalidGrant
 }
 

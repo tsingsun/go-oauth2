@@ -3,7 +3,6 @@ package oauth2
 import (
 	"crypto/rsa"
 	"crypto/x509"
-	"encoding/asn1"
 	"encoding/pem"
 	"errors"
 )
@@ -30,8 +29,8 @@ func NewOptions(opts ...Option) *Options {
 	}
 	return opt
 }
-
-func SetPrivateKey(content []byte) Option {
+//
+func WithPrivateKey(content []byte) Option {
 	block, _ := pem.Decode(content)
 	if block == nil {
 		panic(errors.New("private key error"))
@@ -49,7 +48,7 @@ func SetPrivateKey(content []byte) Option {
 	}
 }
 
-func SetPublicKey(content []byte) Option {
+func WithPublicKey(content []byte) Option {
 	block, _ := pem.Decode(content)
 	if block == nil {
 		panic(errors.New("private key error"))
@@ -66,62 +65,44 @@ func SetPublicKey(content []byte) Option {
 		options.PublickKey = pub
 	}
 }
-func SetEncryptionKey(p string) Option {
+func WithEncryptionKey(p string) Option {
 	return func(options *Options) {
 		options.EncryptionKey = []byte(p)
 	}
 }
 
-func SetClientRepository(c ClientRepositoryInterface) Option {
+func WithClientRepository(c ClientRepositoryInterface) Option {
 	return func(options *Options) {
 		options.ClientRepository = c
 	}
 }
 
-func SetAccessTokenRepository(a AccessTokenRepositoryInterface) Option {
+func WithAccessTokenRepository(a AccessTokenRepositoryInterface) Option {
 	return func(options *Options) {
 		options.AccessTokenRepository = a
 	}
 }
 
-func SetScopeRepository(s ScopeRepositoryInterface) Option {
+func WithScopeRepository(s ScopeRepositoryInterface) Option {
 	return func(options *Options) {
 		options.ScopeRepository = s
 	}
 }
 
-func SetResponseType(r ResponseTypeInterface) Option {
+func WithResponseType(r ResponseTypeInterface) Option {
 	return func(options *Options) {
 		options.DefaultResponseType = r
 	}
 }
 
-func SetAuthCodeRepository(ac AuthCodeRepositoryInterface) Option {
+func WithAuthCodeRepository(ac AuthCodeRepositoryInterface) Option {
 	return func(options *Options) {
 		options.AuthCodeRepository = ac
 	}
 }
 
-func SetRefreshTokenRepository(rt RefreshTokenRepositoryInterface) Option {
+func WithRefreshTokenRepository(rt RefreshTokenRepositoryInterface) Option {
 	return func(options *Options) {
 		options.RefreshTokenRepository = rt
 	}
-}
-
-// MarshalPKCS8PrivateKey 私钥解析
-func marshalPKCS8PrivateKey(key *rsa.PrivateKey) []byte {
-
-	info := struct {
-		Version             int
-		PrivateKeyAlgorithm []asn1.ObjectIdentifier
-		PrivateKey          []byte
-	}{}
-
-	info.Version = 0
-	info.PrivateKeyAlgorithm = make([]asn1.ObjectIdentifier, 1)
-	info.PrivateKeyAlgorithm[0] = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
-	info.PrivateKey = x509.MarshalPKCS1PrivateKey(key)
-	k, _ := asn1.Marshal(info)
-	return k
-
 }

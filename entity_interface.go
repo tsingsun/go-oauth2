@@ -2,6 +2,7 @@ package oauth2
 
 import "time"
 
+// Token - related behavior interface
 type TokenInterface interface {
 	// Get the token's identifier.
 	GetIdentifier() string
@@ -61,9 +62,9 @@ type RefreshTokenEntityInterface interface {
 
 type ScopeEntityInterface interface {
 	// Get the scope's identifier.
-	getIdentifier() string
+	GetIdentifier() string
 }
-
+// user entity interface,it use GetIdentifier() to get user id
 type UserEntityInterface interface {
 	// Get the user's identifier.
 	GetIdentifier() string

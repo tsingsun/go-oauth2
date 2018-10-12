@@ -1,6 +1,9 @@
 package oauth2
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
 
 // the request parameters in OAuth request methods
 type RequestWapper struct {
@@ -23,6 +26,13 @@ type RequestWapper struct {
 	// implicit_type
 	ResponseType string
 	State        string
+	// request context
+	ctx context.Context
+}
+
+// return http request's context
+func (t RequestWapper) SetContext(ctx context.Context ) {
+	t.ctx = ctx
 }
 
 func TokenRequestFromHttp(r *http.Request) *RequestWapper {
@@ -47,6 +57,7 @@ func TokenRequestFromHttp(r *http.Request) *RequestWapper {
 	if ret.ClientId == "" {
 		ret.ClientId, ret.ClientSecret, _ = r.BasicAuth()
 	}
+	ret.ctx = r.Context()
 	return ret
 
 }
@@ -71,6 +82,7 @@ func AuthorizeRequestFromHttp(r *http.Request) *RequestWapper {
 			ret.CodeChallengeMethod = "plain"
 		}
 	}
+	ret.ctx = r.Context()
 	return ret
 
 }

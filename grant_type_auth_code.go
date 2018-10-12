@@ -1,6 +1,7 @@
 package oauth2
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
@@ -114,7 +115,7 @@ func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res Respo
 		return oauthErrors.ErrInvalidAuthCode
 	}
 
-	if g.AuthCodeRepository.IsAuthCodeRevoked(payload.AuthCodeId) {
+	if g.AuthCodeRepository.IsAuthCodeRevoked(rw.ctx,payload.AuthCodeId) {
 		//Authorization code has revoked
 		return oauthErrors.ErrInvalidAuthCode
 	}
@@ -133,12 +134,12 @@ func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res Respo
 
 	}
 
-	scopes, err := g.validateScopes(payload.Scopes)
+	scopes, err := g.validateScopes(rw.ctx,payload.Scopes)
 	if err != nil {
 		return err
 	}
 
-	scopes = g.scopeRepository.FinalizeScopes(scopes, g.GetIdentifier(), client)
+	scopes = g.scopeRepository.FinalizeScopes(rw.ctx,scopes, g.GetIdentifier(), client)
 
 	if g.enabledCodeExchangeProof {
 		if rw.CodeVerifier == "" {
@@ -162,20 +163,20 @@ func (g *AuthCodeGrant) RespondToAccessTokenRequest(rw *RequestWapper, res Respo
 			return oauthErrors.ErrInvalidRequest
 		}
 	}
-	accessToken, err := g.issueAccessToken(g.AccessTokenTTL, client, scopes)
-	refreshToken, err := g.issueRefreshToken(accessToken)
+	accessToken, err := g.issueAccessToken(rw.ctx,g.AccessTokenTTL, client, scopes)
+	refreshToken, err := g.issueRefreshToken(rw.ctx,accessToken)
 	if err != nil {
 		return err
 	}
 	res.SetEncryptionKey(g.encryptionKey)
 	res.SetAccessToken(accessToken)
 	res.SetRefreshToken(refreshToken)
-	g.AuthCodeRepository.RevokeAuthCode(payload.AuthCodeId)
+	g.AuthCodeRepository.RevokeAuthCode(rw.ctx,payload.AuthCodeId)
 	return nil
 }
 
 func (g *AuthCodeGrant) ValidateAuthorizationRequest(rw *RequestWapper) (*AuthorizationRequest, error) {
-	client := g.clientRepository.GetClientEntity(rw.ClientId, g.GetIdentifier(), "", false)
+	client := g.clientRepository.GetClientEntity(rw.ctx,rw.ClientId, g.GetIdentifier(), "", false)
 	if client == nil {
 		return nil, oauthErrors.ErrInvalidClient
 	}
@@ -191,17 +192,19 @@ func (g *AuthCodeGrant) ValidateAuthorizationRequest(rw *RequestWapper) (*Author
 		rUri = client.GetRedirectUri()[0]
 	}
 
-	scopes, err := g.validateScopes(rw.Scope)
+	scopes, err := g.validateScopes(rw.ctx,rw.Scope)
 	if err != nil {
 		return nil, err
 	}
 
-	ar := new(AuthorizationRequest)
-	ar.GrantType = g.GetIdentifier()
-	ar.Client = client
-	ar.RedirectUri = rUri
-	ar.State = rw.State
-	ar.Scopes = scopes
+	ar := &AuthorizationRequest{
+		GrantType:g.GetIdentifier(),
+		Client:client,
+		RedirectUri:rUri,
+		State:rw.State,
+		Scopes:scopes,
+		ctx:rw.ctx,
+	}
 
 	if g.enabledCodeExchangeProof {
 		if rw.CodeChallenge == "" {
@@ -239,7 +242,7 @@ func (g *AuthCodeGrant) CompleteAuthorizationRequest(ar *AuthorizationRequest) (
 	}
 
 	if ar.IsAuthorizationApproved {
-		authCode, err := g.issueAuthCode(g.AuthCodeTTL, ar.Client, ar.RedirectUri, ar.Scopes)
+		authCode, err := g.issueAuthCode(ar.ctx,g.AuthCodeTTL, ar.Client, ar.RedirectUri, ar.Scopes)
 		if err != nil {
 			return nil, err
 		}
@@ -271,8 +274,8 @@ func (g *AuthCodeGrant) CompleteAuthorizationRequest(ar *AuthorizationRequest) (
 	return nil, oauthErrors.ErrAccessDenied
 }
 
-func (g *AuthCodeGrant) issueAuthCode(ttl time.Duration, client ClientEntityInterface, redirectUri string, scopes []ScopeEntityInterface) (AuthCodeEntityInterface, error) {
-	authCode := g.AuthCodeRepository.GetNewAuthCode()
+func (g *AuthCodeGrant) issueAuthCode(ctx context.Context,ttl time.Duration, client ClientEntityInterface, redirectUri string, scopes []ScopeEntityInterface) (AuthCodeEntityInterface, error) {
+	authCode := g.AuthCodeRepository.GetNewAuthCode(ctx)
 	authCode.SetExpiryDateTime(time.Now().Add(ttl))
 	authCode.SetClient(client)
 	authCode.SetRedirectUri(redirectUri)
@@ -281,7 +284,7 @@ func (g *AuthCodeGrant) issueAuthCode(ttl time.Duration, client ClientEntityInte
 	}
 	for maxGenerationAttempts := g.getMaxGenerationAttempts(); maxGenerationAttempts > 0; maxGenerationAttempts-- {
 		authCode.SetIdentifier(g.GenerateUniqueIdentifier(40))
-		if g.AuthCodeRepository.PersistNewAuthCode(authCode) {
+		if g.AuthCodeRepository.PersistNewAuthCode(ctx,authCode) {
 			return authCode, nil
 		}
 	}
@@ -289,13 +292,13 @@ func (g *AuthCodeGrant) issueAuthCode(ttl time.Duration, client ClientEntityInte
 	return nil, oauthErrors.ErrPersistNewError
 }
 
-func (g *AuthCodeGrant) issueRefreshToken(accessToken AccessTokenEntityInterface) (RefreshTokenEntityInterface, error) {
-	refreshToken := g.RefreshTokenRepository.GetNewRefreshToken()
+func (g *AuthCodeGrant) issueRefreshToken(ctx context.Context,accessToken AccessTokenEntityInterface) (RefreshTokenEntityInterface, error) {
+	refreshToken := g.RefreshTokenRepository.GetNewRefreshToken(ctx)
 	refreshToken.SetExpiryDateTime(time.Now().Add(g.RefreshTokenTTL))
 	refreshToken.SetAccessToken(accessToken)
 	for maxGenerationAttempts := g.getMaxGenerationAttempts(); maxGenerationAttempts > 0; maxGenerationAttempts-- {
 		refreshToken.SetIdentifier(g.GenerateUniqueIdentifier(40))
-		if g.RefreshTokenRepository.PersistNewRefreshToken(refreshToken) {
+		if g.RefreshTokenRepository.PersistNewRefreshToken(ctx,refreshToken) {
 			return refreshToken, nil
 		}
 	}
